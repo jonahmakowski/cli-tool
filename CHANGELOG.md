@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/release.yaml
 - Update changelog
 - Merge branch 'main' of https://git.jonahmakowski.ca/jonahmakowski/cli-tool
+- Update changelog
+- Add manual trigger for changelog update
 
 ### Fixed
 
