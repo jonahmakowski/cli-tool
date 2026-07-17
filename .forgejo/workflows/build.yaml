@@ -31,7 +31,7 @@ jobs:
             ~/.cargo/env
           key: ${{ runner.os }}-rust
       
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Install minimal Rust
         shell: bash
