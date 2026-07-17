@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: docker
+    runs-on: metal
 
     strategy:
       matrix:
@@ -40,22 +40,20 @@ jobs:
             curl https://sh.rustup.rs -sSf | sh -s -- -y
           fi
       
-      - name: Add cargo to PATH
-        run: echo "PATH=$HOME/.cargo/bin:$PATH" >> $FORGEJO_ENV
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
 
-      - name: Install Rust target
-        run: rustup target add ${{ matrix.target }}
+      - name: Build
+        run: cross build --release --target ${{ matrix.target }}
 
-      - name: Install zigbuild
+      - name: Package binary
         run: |
-          apt-get update
-          apt-get install -y zig
-
-      - name: Build with zigbuild
-        run: cargo zigbuild --release --target ${{ matrix.target }}
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/<binary-name>* dist/
+        shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: cli-tool-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/*
+          path: dist/
