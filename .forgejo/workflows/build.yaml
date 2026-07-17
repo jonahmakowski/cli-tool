@@ -44,6 +44,9 @@ jobs:
           if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
             curl https://sh.rustup.rs -sSf | sh -s -- -y
           fi
+      
+      - name: Add cargo to PATH
+        run: echo "PATH=$HOME/.cargo/bin:$PATH" >> $FORGEJO_ENV
 
       - name: Install Rust target
         run: rustup target add ${{ matrix.target }}
