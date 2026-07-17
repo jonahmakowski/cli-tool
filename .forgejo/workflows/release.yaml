@@ -72,6 +72,14 @@ jobs:
         with:
           path: release
 
+      - name: Zip artifacts
+        run: |
+          cd release
+          for dir in */; do
+            zip -r "${dir%/}.zip" "$dir"
+            rm -rf "$dir"
+          done
+
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2
         with:
