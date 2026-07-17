@@ -74,6 +74,7 @@ jobs:
 
       - name: Zip artifacts
         run: |
+          apt-get install -y zip
           cd release
           for dir in */; do
             zip -r "${dir%/}.zip" "$dir"
