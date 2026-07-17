@@ -25,7 +25,27 @@ jobs:
             tool: zig
 
     steps:
+      - name: Cache Rust
+        uses: actions/cache@v5
+        id: cache-rust
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.rustup/
+            ~/.cargo/env
+          key: ${{ runner.os }}-rust
+      
       - uses: actions/checkout@v4
+
+      - name: Install minimal Rust
+        shell: bash
+        run: |
+          set -e
+          if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
+          curl https://sh.rustup.rs -sSf | sh -s -- \
+              -y \
+              --profile minimal \
+          fi
 
       - name: Install Rust target
         run: rustup target add ${{ matrix.target }}
