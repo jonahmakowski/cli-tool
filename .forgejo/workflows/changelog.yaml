@@ -1,0 +1,42 @@
+name: Update changelog
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Configure git authentication
+        run: |
+          git remote set-url origin \
+            https://x-access-token:${{ secrets.FORGEJO_TOKEN }}@git.jonahmakowski.ca/${{ forgejo.repository }}.git
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@git-cliff
+
+      - name: Generate changelog
+        run: |
+          git-cliff --output CHANGELOG.md
+
+      - name: Commit changelog
+        run: |
+          git config user.name "forgejo-actions"
+          git config user.email "actions@localhost"
+
+          git add CHANGELOG.md
+
+          if git diff --cached --quiet; then
+            echo "No changelog changes"
+          else
+            git commit -m "Update changelog"
+            git push
+          fi
