@@ -53,7 +53,7 @@ jobs:
       - name: Package binary
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/<binary-name>* dist/
+          cp target/${{ matrix.target }}/release/cli-tool* dist/
         shell: bash
 
       - name: Upload artifact
