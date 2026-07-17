@@ -14,15 +14,10 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            tool: cross
           - target: aarch64-unknown-linux-gnu
-            tool: cross
           - target: x86_64-pc-windows-gnu
-            tool: cross
           - target: x86_64-apple-darwin
-            tool: zig
           - target: aarch64-apple-darwin
-            tool: zig
 
     steps:
       - name: Cache Rust
@@ -51,21 +46,12 @@ jobs:
       - name: Install Rust target
         run: rustup target add ${{ matrix.target }}
 
-      - name: Install cross
-        if: matrix.tool == 'cross'
-        run: cargo install cross
-
       - name: Install zigbuild
-        if: matrix.tool == 'zig'
         run: |
           apt-get update
           apt-get install -y python3 python3-pip
           pip install ziglang
           cargo install cargo-zigbuild
-
-      - name: Build with cross
-        if: matrix.tool == 'cross'
-        run: cross build --release --target ${{ matrix.target }}
 
       - name: Build with zigbuild
         if: matrix.tool == 'zig'
