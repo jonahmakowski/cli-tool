@@ -61,3 +61,25 @@ jobs:
         with:
           name: cli-tool-${{ matrix.target }}
           path: dist/
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: release
+
+      - name: Create Forgejo release
+        uses: actions/forgejo-release@v2
+        with:
+          direction: upload
+          url: https://git.jonahmakowski.ca
+          repo: ${{ forgejo.repository }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag: ${{ forgejo.ref_name }}
+          release-dir: release
+          release-notes: auto
+    
