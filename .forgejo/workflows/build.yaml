@@ -44,7 +44,7 @@ jobs:
           if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
           curl https://sh.rustup.rs -sSf | sh -s -- \
               -y \
-              --profile minimal \
+              --profile minimal
           fi
 
       - name: Install Rust target
