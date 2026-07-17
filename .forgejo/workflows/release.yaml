@@ -6,7 +6,7 @@ on:
     tags:
       - "v*"
 
-jobs:
+jobs:  
   build:
     runs-on: metal
 
@@ -65,21 +65,37 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-
+    
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           path: release
 
-      - name: Zip artifacts
+      - name: Install git-cliff
+        uses: taiki-e/install-action@git-cliff
+      
+      - name: Archive artifacts
         run: |
-          apt-get install -y zip
           cd release
           for dir in */; do
-            zip -r "${dir%/}.zip" "$dir"
+            tar -czf "${dir%/}.tar.gz" "$dir"
             rm -rf "$dir"
           done
+
+      - name: Generate release notes
+        id: changelog
+        run: |
+          {
+            echo 'notes<<EOF'
+            git-cliff --latest
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2
@@ -90,5 +106,5 @@ jobs:
           token: ${{ secrets.FORGEJO_TOKEN }}
           tag: ${{ forgejo.ref_name }}
           release-dir: release
-          release-notes: auto
+          release-notes: ${{ steps.changelog.outputs.notes }}
     
