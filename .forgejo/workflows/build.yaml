@@ -16,8 +16,9 @@ jobs:
           - target: x86_64-unknown-linux-gnu
           - target: aarch64-unknown-linux-gnu
           - target: x86_64-pc-windows-gnu
-          - target: x86_64-apple-darwin
-          - target: aarch64-apple-darwin
+          # Macos builds are not yet functional, this needs more tweaking
+          #- target: x86_64-apple-darwin
+          #- target: aarch64-apple-darwin
 
     steps:
       - name: Cache Rust
