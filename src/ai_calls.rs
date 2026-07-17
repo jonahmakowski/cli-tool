@@ -1,7 +1,14 @@
 use reqwest::blocking::Client;
 use serde_json::json;
-use std::fs;
 use crate::config;
+use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static PATTERNS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
+    HashMap::from([
+        ("yt-summary", include_str!("../prompts/yt-summary.md")),
+    ])
+});
 
 pub fn base_call(system_prompt: &str, user_message: &str, config: &config::Config) -> Result<String, Box<dyn std::error::Error>> {
     println!("Asking AI");
@@ -38,7 +45,11 @@ pub fn base_call(system_prompt: &str, user_message: &str, config: &config::Confi
 }
 
 pub fn use_pattern(pattern: &str, user_message: &str, config: &config::Config) -> Result<String, Box<dyn std::error::Error>> {
-    let system_prompt = fs::read_to_string(format!("{}/{}.md", config.prompt_dir(), pattern))?;
+    if !PATTERNS.contains_key(pattern) {
+        return Err("Patern doesn't exist".into());
+    }
+
+    let system_prompt = PATTERNS[pattern];
 
     base_call(&system_prompt, user_message, config)
 }
