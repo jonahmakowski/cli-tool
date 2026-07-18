@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Get ip address tool
+
 ### Fixed
 
 - Cliff.toml to ignore automated changelog commits
