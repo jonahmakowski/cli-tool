@@ -24,6 +24,11 @@ enum Command {
         #[command(subcommand)]
         target: SummarizeTarget,
     },
+    // Get data from the internet
+    Net {
+        #[command(subcommand)]
+        target: NetTarget,
+    }
 }
 
 #[derive(Subcommand)]
@@ -37,6 +42,14 @@ enum SummarizeTarget {
     },
 }
 
+#[derive(Subcommand)]
+enum NetTarget {
+    #[command(
+        about="Get weather data"
+    )]
+    Weather,
+}
+
 fn main() {
     let cli = Cli::parse();
     let config = config::load_config(cli.private);
@@ -46,6 +59,13 @@ fn main() {
             match target {
                 SummarizeTarget::Yt { url } => {
                     plugins::yt::run_summarize_yt(&config, &url);
+                }
+            }
+        }
+        Command::Net { target } => {
+            match target {
+                NetTarget::Weather => {
+                    plugins::net::get_weather_data();
                 }
             }
         }
