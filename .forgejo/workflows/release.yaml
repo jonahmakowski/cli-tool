@@ -107,6 +107,12 @@ jobs:
           tag: ${{ forgejo.ref_name }}
           release-dir: release
           release-notes: ${{ steps.changelog.outputs.notes }}
+      
+      - name: Install GitHub CLI
+        run: |
+          apt-get update
+          apt-get install -y gh
+          
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
