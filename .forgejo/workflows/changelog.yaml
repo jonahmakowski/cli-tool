@@ -38,6 +38,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changelog changes"
           else
-            git commit -m "Update changelog"
+            git commit -m "docs(changelog): Update changelog"
             git push
           fi
