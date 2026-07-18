@@ -107,4 +107,13 @@ jobs:
           tag: ${{ forgejo.ref_name }}
           release-dir: release
           release-notes: ${{ steps.changelog.outputs.notes }}
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh release create "${{ forgejo.ref_name }}" \
+            release/* \
+            --title "${{ forgejo.ref_name }}" \
+            --notes "${{ steps.changelog.outputs.notes }}" \
+            --repo jonahmakowski/cli-tool
     
