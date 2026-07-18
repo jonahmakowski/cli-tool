@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update changelog
 - Add release publishing to github
+- Update changelog
 
 ### Fixed
 
 - Made updating the changelog a "docs" type commit
+- Install github cli before using it
 
 ## [0.1.0] - 2026-07-18
 
