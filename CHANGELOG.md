@@ -5,11 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Cliff.toml to ignore automated changelog commits
+
+## [0.1.1] - 2026-07-18
+
 ### Changed
 
-- Update changelog
 - Add release publishing to github
-- Update changelog
 
 ### Fixed
 
@@ -104,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.1.0..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.1.1..HEAD
+[0.1.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.1.0..v0.1.1
 [0.1.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.6..v0.1.0
 [0.0.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.5..v0.0.6
 [0.0.5]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.4..v0.0.5
