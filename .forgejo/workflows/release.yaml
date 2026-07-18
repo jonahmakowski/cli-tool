@@ -78,7 +78,7 @@ jobs:
           path: release
 
       - name: Install git-cliff
-        uses: taiki-e/install-action@git-cliff
+        uses: https://github.com/taiki-e/install-action@git-cliff
       
       - name: Archive artifacts
         run: |
