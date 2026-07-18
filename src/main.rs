@@ -44,10 +44,13 @@ enum SummarizeTarget {
 
 #[derive(Subcommand)]
 enum NetTarget {
-    #[command(
-        about="Get weather data"
-    )]
+    /// Get Weather Data
     Weather,
+    /// Get your public ip address
+    Ip {
+        #[arg(short = '6', help = "Get IpV6 information")]
+        ip_v6: bool,
+    }
 }
 
 fn main() {
@@ -66,6 +69,20 @@ fn main() {
             match target {
                 NetTarget::Weather => {
                     plugins::net::get_weather_data();
+                }
+                NetTarget::Ip { ip_v6 } => {
+                    let ip = plugins::net::get_public_ip({
+                        if ip_v6 {
+                            &plugins::net::IpType::V6
+                        } else {
+                            &plugins::net::IpType::V4
+                        }
+                    });
+
+                    match ip {
+                        Ok(data) => println!("Public IP Address: {}", data),
+                        Err(err) => eprintln!("Error: {}", err),
+                    }
                 }
             }
         }

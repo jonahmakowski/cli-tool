@@ -1,7 +1,12 @@
 use reqwest::blocking::Client;
 use reqwest::header;
-
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use serde::Deserialize;
+
+pub enum IpType {
+    V4,
+    V6,
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -36,8 +41,15 @@ struct DailyWeather {
     temperature_2m_mean: Vec<f64>,
 }
 
-fn get_public_ip() -> Result<String, Box<dyn std::error::Error>> {
-    let client = Client::new();
+pub fn get_public_ip(ip_type: &IpType) -> Result<String, Box<dyn std::error::Error>> {
+    let mut client_builder = Client::builder();
+
+    match ip_type {
+        IpType::V4 => client_builder = client_builder.local_address(IpAddr::V4(Ipv4Addr::UNSPECIFIED)),
+        IpType::V6 => client_builder = client_builder.local_address(IpAddr::V6(Ipv6Addr::UNSPECIFIED)),
+    }
+        
+    let client = client_builder.build()?;
 
     let ip = client.get("https://ifconfig.me")
         .header(header::USER_AGENT, "curl/8.7.1")
@@ -48,7 +60,7 @@ fn get_public_ip() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 fn get_ip_info() -> Result<IpInfo, Box<dyn std::error::Error >> {
-    let public_ip = get_public_ip()?;
+    let public_ip = get_public_ip(&IpType::V4)?;
 
     let client = Client::new();
 
