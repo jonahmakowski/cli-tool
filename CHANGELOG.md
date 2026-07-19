@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cliff.toml to ignore automated changelog commits
 - Add git-cliff to PATH when restoring from cache
 - Adding git-cliff to the path and installation conditions
+- Remove caching that isn't working
 
 ## [0.1.1] - 2026-07-18
 
