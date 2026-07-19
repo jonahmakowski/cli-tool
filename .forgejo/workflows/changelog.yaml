@@ -30,12 +30,16 @@ jobs:
         id: git-cliff-cache
         with:
           path: |
-            /root/.install-action/
+            $HOME/.install-action/
           key: ${{ runner.os }}-git-cliff-${{ steps.cache-epoch.outputs.week }}
 
       - name: Install git-cliff
-        if: steps.git-cliff-cache.outputs.cache-hit != 'true'
+        if: steps.git-cliff-cache.outputs.cache-hit == 'false'
         uses: https://github.com/taiki-e/install-action@git-cliff
+      
+      - name: Add cached git-cliff to PATH
+        if: steps.git-cliff-cache.outputs.cache-hit == 'true'
+        run: echo "PATH=$HOME/.install-action/bin:$PATH" >> $FORGEJO_ENV
 
       - name: Generate changelog
         run: |
