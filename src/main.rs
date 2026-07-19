@@ -70,12 +70,12 @@ enum NetDownloadTarget {
 
 fn main() {
     let cli = Cli::parse();
-    let config = config::load_config(cli.private);
+    let config = config::load_config();
 
     match cli.command {
         Command::Summarize { target } => match target {
             SummarizeTarget::Yt { url } => {
-                plugins::yt::run_summarize_yt(&config, &url);
+                plugins::yt::run_summarize_yt(&config, &url, cli.private);
             }
         },
         Command::Net { target } => match target {

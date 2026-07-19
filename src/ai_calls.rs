@@ -11,16 +11,25 @@ pub fn base_call(
     system_prompt: &str,
     user_message: &str,
     config: &config::Config,
+    private_mode: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
     println!("Asking AI");
 
     let client = Client::new();
 
+    let ai_config = {
+        if private_mode {
+            &config.ai.private
+        } else {
+            &config.ai.public
+        }
+    };
+
     let response = client
-        .post(format!("{}/chat/completions", config.base_url()))
-        .bearer_auth(config.api_key())
+        .post(format!("{}/chat/completions", ai_config.base_url()))
+        .bearer_auth(ai_config.api_key())
         .json(&json!({
-            "model": config.model(),
+            "model": ai_config.model(),
             "messages": [
                 {
                     "role": "system",
@@ -49,6 +58,7 @@ pub fn use_pattern(
     pattern: &str,
     user_message: &str,
     config: &config::Config,
+    private_mode: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
     if !PATTERNS.contains_key(pattern) {
         return Err("Patern doesn't exist".into());
@@ -56,5 +66,5 @@ pub fn use_pattern(
 
     let system_prompt = PATTERNS[pattern];
 
-    base_call(&system_prompt, user_message, config)
+    base_call(&system_prompt, user_message, config, private_mode)
 }

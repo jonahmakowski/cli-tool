@@ -35,23 +35,25 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
     Ok(result)
 }
 
-pub fn run_summarize_yt(config: &crate::config::Config, url: &str) {
+pub fn run_summarize_yt(config: &crate::config::Config, url: &str, private_mode: bool) {
     let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
 
     let get_subs = get_subtitles(&fixed_url);
 
     match get_subs {
-        Ok(subtitles) => match ai_calls::use_pattern("yt-summary", &subtitles, &config) {
-            Ok(result) => {
-                println!("Summary:");
-                println!("{result}");
-                return ();
+        Ok(subtitles) => {
+            match ai_calls::use_pattern("yt-summary", &subtitles, &config, private_mode) {
+                Ok(result) => {
+                    println!("Summary:");
+                    println!("{result}");
+                    return ();
+                }
+                Err(err) => {
+                    println!("Error: {}", err);
+                    return ();
+                }
             }
-            Err(err) => {
-                println!("Error: {}", err);
-                return ();
-            }
-        },
+        }
         Err(err) => {
             println!("Error: {}", err);
             return ();
