@@ -11,8 +11,10 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
     let status = Command::new("yt-dlp")
         .args([
             "--write-auto-subs",
-            "--sub-langs", "en",
-            "--sub-format", "vtt",
+            "--sub-langs",
+            "en",
+            "--sub-format",
+            "vtt",
             "--skip-download",
             "-o",
         ])
@@ -23,7 +25,7 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
         .status()?;
 
     if !status.success() {
-        return Err("yt-dlp failed".into())
+        return Err("yt-dlp failed".into());
     }
 
     let vtt_path = tempdir.path().join("subs.en.vtt");
@@ -33,29 +35,26 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
     Ok(result)
 }
 
-
 pub fn run_summarize_yt(config: &crate::config::Config, url: &str) {
     let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
 
     let get_subs = get_subtitles(&fixed_url);
 
     match get_subs {
-        Ok(subtitles) => {
-            match ai_calls::use_pattern("yt-summary", &subtitles, &config) {
-                Ok(result) => {
-                    println!("Summary:");
-                    println!("{result}");
-                    return ()
-                }
-                Err(err) => {
-                    println!("Error: {}", err);
-                    return ()
-                }
+        Ok(subtitles) => match ai_calls::use_pattern("yt-summary", &subtitles, &config) {
+            Ok(result) => {
+                println!("Summary:");
+                println!("{result}");
+                return ();
             }
-        }
+            Err(err) => {
+                println!("Error: {}", err);
+                return ();
+            }
+        },
         Err(err) => {
             println!("Error: {}", err);
-            return ()
+            return ();
         }
     }
 }
@@ -65,16 +64,10 @@ pub fn download_yt(url: &str, target_location: &str) -> Result<(), Box<dyn std::
 
     let mut command = Command::new("yt-dlp");
 
-    command
-        .args([
-            "-t",
-            "mp4",
-        ]);
-    
+    command.args(["-t", "mp4"]);
+
     if target_location != "" {
-        command
-            .arg("--output")
-            .arg(target_location);
+        command.arg("--output").arg(target_location);
     }
 
     command.arg(fixed_url);
@@ -82,7 +75,7 @@ pub fn download_yt(url: &str, target_location: &str) -> Result<(), Box<dyn std::
     let status = command.status()?;
 
     if !status.success() {
-        return Err("yt-dlp failed".into())
+        return Err("yt-dlp failed".into());
     }
 
     Ok(())

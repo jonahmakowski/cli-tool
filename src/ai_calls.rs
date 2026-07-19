@@ -1,16 +1,17 @@
+use crate::config;
 use reqwest::blocking::Client;
 use serde_json::json;
-use crate::config;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-static PATTERNS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
-    HashMap::from([
-        ("yt-summary", include_str!("../prompts/yt-summary.md")),
-    ])
-});
+static PATTERNS: LazyLock<HashMap<&'static str, &'static str>> =
+    LazyLock::new(|| HashMap::from([("yt-summary", include_str!("../prompts/yt-summary.md"))]));
 
-pub fn base_call(system_prompt: &str, user_message: &str, config: &config::Config) -> Result<String, Box<dyn std::error::Error>> {
+pub fn base_call(
+    system_prompt: &str,
+    user_message: &str,
+    config: &config::Config,
+) -> Result<String, Box<dyn std::error::Error>> {
     println!("Asking AI");
 
     let client = Client::new();
@@ -44,7 +45,11 @@ pub fn base_call(system_prompt: &str, user_message: &str, config: &config::Confi
     Ok(answer.to_string())
 }
 
-pub fn use_pattern(pattern: &str, user_message: &str, config: &config::Config) -> Result<String, Box<dyn std::error::Error>> {
+pub fn use_pattern(
+    pattern: &str,
+    user_message: &str,
+    config: &config::Config,
+) -> Result<String, Box<dyn std::error::Error>> {
     if !PATTERNS.contains_key(pattern) {
         return Err("Patern doesn't exist".into());
     }

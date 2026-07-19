@@ -22,7 +22,7 @@ pub fn load_config(private: bool) -> Config {
     println!("Loading Config!");
 
     dotenvy::dotenv().ok();
-    
+
     let mut preappend = "";
     if private {
         preappend = "PRIVATE_";
@@ -36,6 +36,6 @@ pub fn load_config(private: bool) -> Config {
     Config {
         api_key,
         model,
-        base_url
+        base_url,
     }
 }

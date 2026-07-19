@@ -10,11 +10,11 @@ struct Cli {
 
     #[arg(
         short = 'p',
-        long, 
-        global=true,
-        help="Use the private AI configuration in relevant workflows"
+        long,
+        global = true,
+        help = "Use the private AI configuration in relevant workflows"
     )]
-    private:bool,
+    private: bool,
 }
 
 #[derive(Subcommand)]
@@ -28,14 +28,12 @@ enum Command {
     Net {
         #[command(subcommand)]
         target: NetTarget,
-    }
+    },
 }
 
 #[derive(Subcommand)]
 enum SummarizeTarget {
-    #[command(
-        about="Summarize content from youtube, provided a youtube or invidious url"
-    )]
+    #[command(about = "Summarize content from youtube, provided a youtube or invidious url")]
     Yt {
         /// Url of the youtube video
         url: String,
@@ -54,7 +52,7 @@ enum NetTarget {
     /// Download data from various sources
     Download {
         #[command(subcommand)]
-        target: NetDownloadTarget
+        target: NetDownloadTarget,
     },
 }
 
@@ -64,10 +62,10 @@ enum NetDownloadTarget {
     Yt {
         /// Url of the youtube video
         url: String,
-        /// Name for the output, default 
+        /// Name for the output, default
         #[arg(short = 'o', long, default_value = "")]
-        output: String
-    }
+        output: String,
+    },
 }
 
 fn main() {
@@ -75,43 +73,37 @@ fn main() {
     let config = config::load_config(cli.private);
 
     match cli.command {
-        Command::Summarize { target } => {
-            match target {
-                SummarizeTarget::Yt { url } => {
-                    plugins::yt::run_summarize_yt(&config, &url);
+        Command::Summarize { target } => match target {
+            SummarizeTarget::Yt { url } => {
+                plugins::yt::run_summarize_yt(&config, &url);
+            }
+        },
+        Command::Net { target } => match target {
+            NetTarget::Weather => {
+                plugins::net::get_weather_data();
+            }
+            NetTarget::Ip { ip_v6 } => {
+                let ip = plugins::net::get_public_ip({
+                    if ip_v6 {
+                        &plugins::net::IpType::V6
+                    } else {
+                        &plugins::net::IpType::V4
+                    }
+                });
+
+                match ip {
+                    Ok(data) => println!("Public IP Address: {}", data),
+                    Err(err) => eprintln!("Error: {}", err),
                 }
             }
-        }
-        Command::Net { target } => {
-            match target {
-                NetTarget::Weather => {
-                    plugins::net::get_weather_data();
-                }
-                NetTarget::Ip { ip_v6 } => {
-                    let ip = plugins::net::get_public_ip({
-                        if ip_v6 {
-                            &plugins::net::IpType::V6
-                        } else {
-                            &plugins::net::IpType::V4
-                        }
-                    });
-
-                    match ip {
-                        Ok(data) => println!("Public IP Address: {}", data),
+            NetTarget::Download { target } => match target {
+                NetDownloadTarget::Yt { url, output } => {
+                    match plugins::yt::download_yt(&url, &output) {
+                        Ok(_) => println!("Downloaded successfully"),
                         Err(err) => eprintln!("Error: {}", err),
                     }
                 }
-                NetTarget::Download { target } => {
-                    match target {
-                        NetDownloadTarget::Yt { url, output } => {
-                            match plugins::yt::download_yt(&url, &output) {
-                                Ok(_) => println!("Downloaded successfully"),
-                                Err(err) => eprintln!("Error: {}", err),
-                            }
-                        }
-                    }
-                }
-            }
-        }
+            },
+        },
     }
 }
