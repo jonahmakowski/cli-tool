@@ -32,14 +32,23 @@ jobs:
           path: |
             $HOME/.install-action/
           key: ${{ runner.os }}-git-cliff-${{ steps.cache-epoch.outputs.week }}
+      
+      - name: Check for git-cliff
+        id: git-cliff-check
+        run: |
+          if "$HOME/.install-action/bin/git-cliff" --version >/dev/null 2>&1; then
+            echo "installed=true" >> $FORGEJO_OUTPUT
+          else
+            echo "installed=false" >> $FORGEJO_OUTPUT
+          fi
 
       - name: Install git-cliff
-        if: steps.git-cliff-cache.outputs.cache-hit == 'false'
+        if: steps.git-cliff-check.outputs.installed == 'false'
         uses: https://github.com/taiki-e/install-action@git-cliff
-      
-      - name: Add cached git-cliff to PATH
-        if: steps.git-cliff-cache.outputs.cache-hit == 'true'
-        run: echo "PATH=$HOME/.install-action/bin:$PATH" >> $FORGEJO_ENV
+
+      - name: Add git-cliff to PATH (if from cache)
+        if: steps.git-cliff-check.outputs.installed == 'true'
+        run: echo "$HOME/.install-action/bin" >> $FORGEJO_ENV
 
       - name: Generate changelog
         run: |
