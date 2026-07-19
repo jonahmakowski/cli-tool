@@ -12,10 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Get ip address tool
+- Feat: Youtube downloader to mp4
 
 ### Fixed
 
 - Cliff.toml to ignore automated changelog commits
+- Add git-cliff to PATH when restoring from cache
+- Adding git-cliff to the path and installation conditions
 
 ## [0.1.1] - 2026-07-18
 
