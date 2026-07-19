@@ -34,7 +34,7 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
 }
 
 
-pub fn run_summarize_yt(config: &crate::config::Config, url: &str) -> () {
+pub fn run_summarize_yt(config: &crate::config::Config, url: &str) {
     let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
 
     let get_subs = get_subtitles(&fixed_url);
@@ -58,4 +58,32 @@ pub fn run_summarize_yt(config: &crate::config::Config, url: &str) -> () {
             return ()
         }
     }
+}
+
+pub fn download_yt(url: &str, target_location: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
+
+    let mut command = Command::new("yt-dlp");
+
+    command
+        .args([
+            "-t",
+            "mp4",
+        ]);
+    
+    if target_location != "" {
+        command
+            .arg("--output")
+            .arg(target_location);
+    }
+
+    command.arg(fixed_url);
+
+    let status = command.status()?;
+
+    if !status.success() {
+        return Err("yt-dlp failed".into())
+    }
+
+    Ok(())
 }

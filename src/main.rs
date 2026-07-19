@@ -50,6 +50,23 @@ enum NetTarget {
     Ip {
         #[arg(short = '6', help = "Get IpV6 information")]
         ip_v6: bool,
+    },
+    /// Download data from various sources
+    Download {
+        #[command(subcommand)]
+        target: NetDownloadTarget
+    },
+}
+
+#[derive(Subcommand)]
+enum NetDownloadTarget {
+    /// Download a video from youtube or other yt-dlp supported site
+    Yt {
+        /// Url of the youtube video
+        url: String,
+        /// Name for the output, default 
+        #[arg(short = 'o', long, default_value = "")]
+        output: String
     }
 }
 
@@ -82,6 +99,16 @@ fn main() {
                     match ip {
                         Ok(data) => println!("Public IP Address: {}", data),
                         Err(err) => eprintln!("Error: {}", err),
+                    }
+                }
+                NetTarget::Download { target } => {
+                    match target {
+                        NetDownloadTarget::Yt { url, output } => {
+                            match plugins::yt::download_yt(&url, &output) {
+                                Ok(_) => println!("Downloaded successfully"),
+                                Err(err) => eprintln!("Error: {}", err),
+                            }
+                        }
                     }
                 }
             }
