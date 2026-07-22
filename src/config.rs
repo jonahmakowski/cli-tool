@@ -7,6 +7,7 @@ use std::fs;
 #[getset(get = "pub")]
 pub struct Config {
     pub ai: AiConfig,
+    pub tv: TvConfig,
 }
 
 #[derive(Debug, Deserialize, Getters)]
@@ -22,6 +23,12 @@ pub struct AiConfigChild {
     api_key: String,
     model: String,
     base_url: String,
+}
+
+#[derive(Debug, Deserialize, Getters)]
+#[getset(get = "pub")]
+pub struct TvConfig {
+    api_key: Option<String>
 }
 
 pub fn load_config() -> Config {
