@@ -70,16 +70,6 @@ pub struct SearchResult {
     pub tvdb_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct SearchLinks {
-    pub prev: Option<String>,
-    pub self_link: String,
-    pub next: Option<String>,
-
-    pub total_items: i64,
-    pub page_size: i64,
-}
-
 fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
     let dirs = ProjectDirs::from("com", "jonahmakowski", "cli-tool").unwrap();
     let cache_dir = dirs.cache_dir();
