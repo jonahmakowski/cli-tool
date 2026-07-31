@@ -13,3 +13,4 @@ serde = { version = "1.0.228", features = ["derive"] }
 yaml_serde = "0.10.4"
 getset = "0.1.7"
 directories = "6.0.0"
+urlencoding = "2.1.3"

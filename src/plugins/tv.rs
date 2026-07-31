@@ -41,7 +41,46 @@ impl CachedToken {
     }
 }
 
-pub fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
+#[derive(Debug, Deserialize)]
+pub struct SearchResponse {
+    pub status: String,
+    pub data: Vec<SearchResult>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SearchResult {
+    #[serde(rename = "objectID")]
+    pub object_id: String,
+
+    pub name: String,
+
+    pub image_url: Option<String>,
+    pub thumbnail: Option<String>,
+
+    pub overview: Option<String>,
+
+    pub first_air_time: Option<String>,
+    pub primary_type: Option<String>,
+
+    pub status: Option<String>,
+    pub year: Option<String>,
+    pub slug: Option<String>,
+
+    pub network: Option<String>,
+    pub tvdb_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SearchLinks {
+    pub prev: Option<String>,
+    pub self_link: String,
+    pub next: Option<String>,
+
+    pub total_items: i64,
+    pub page_size: i64,
+}
+
+fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
     let dirs = ProjectDirs::from("com", "jonahmakowski", "cli-tool").unwrap();
     let cache_dir = dirs.cache_dir();
     let cache_file = cache_dir.join("tvdb_cache.json");
@@ -74,4 +113,37 @@ pub fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
     fs::write(&cache_file, serde_json::to_vec_pretty(&new_cache).unwrap())?;
 
     return Ok(token);
+}
+
+pub fn search(api_key: &str, query: &str, limit: i64) -> Result<(), Box<dyn std::error::Error>> {
+    let bearer = get_bearer(api_key)?;
+
+    let client = Client::new();
+
+    let data = client
+        .get(format!(
+            "{}/search?query={}&limit={}",
+            TVBD_API_BASE,
+            urlencoding::encode(query),
+            limit
+        ))
+        .bearer_auth(bearer)
+        .send()?
+        .text()?;
+
+    let parsed_data: SearchResponse = serde_json::from_str(&data)?;
+
+    if parsed_data.status != "success" {
+        return Err("Request did not return success".into())
+    }
+
+    for (index, response) in parsed_data.data.iter().enumerate() {
+        println!("---------------- Result #{} ----------------", index+1);
+        println!("Title: {}", response.name);
+        println!("Object ID: {}", response.object_id);
+        println!("First Air Time: {}", response.first_air_time.as_deref().unwrap_or("null".into()));
+        println!("Overview: {}", response.overview.as_deref().unwrap_or("null".into()))
+    }
+
+    Ok(())
 }
