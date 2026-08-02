@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Disable release building until further notice
 - Convert comments to doc comments for CLI help visibility
+- Make the workflow valid
 
 ## [0.5.1] - 2026-08-02
 

@@ -1,6 +1,6 @@
 name: Build releases
 
-#on:
+on:
 #  workflow_dispatch:
 #  push:
 #    tags:
