@@ -29,6 +29,11 @@ enum Command {
         #[command(subcommand)]
         target: NetTarget,
     },
+    // Run commands that modify or are useful for code
+    Code {
+        #[command(subcommand)]
+        target: CodeTarget,
+    },
 }
 
 #[derive(Subcommand)]
@@ -85,6 +90,20 @@ enum SearchTarget {
     },
 }
 
+#[derive(Subcommand)]
+enum CodeTarget {
+    /// Write a git commit message
+    #[command(name = "git_commit")]
+    GitCommit {
+        /// This is a breaking change
+        #[arg(long, default_value_t = false)]
+        breaking: bool,
+        /// What was your goal with this commit
+        #[arg(default_value_t = String::new())]
+        intent: String,
+    },
+}
+
 fn main() {
     let cli = Cli::parse();
     let config = config::load_config();
@@ -126,6 +145,11 @@ fn main() {
                     plugins::tv::tui_search(config.tv.api_key(), &parameter, max);
                 }
             },
+        },
+        Command::Code { target } => match target {
+            CodeTarget::GitCommit { breaking, intent } => {
+                plugins::git::write_commit_message_wrapper(&config, cli.private, breaking, &intent);
+            }
         },
     }
 }

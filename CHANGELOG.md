@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add AI-powered git commit command and clean up debug output
+
 ### Changed
 
 - Made pre-commit run rustfmt instead of just checking

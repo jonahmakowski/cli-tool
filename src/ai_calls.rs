@@ -4,8 +4,15 @@ use serde_json::json;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-static PATTERNS: LazyLock<HashMap<&'static str, &'static str>> =
-    LazyLock::new(|| HashMap::from([("yt-summary", include_str!("../prompts/yt-summary.md"))]));
+static PATTERNS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
+    HashMap::from([
+        ("yt-summary", include_str!("../prompts/yt-summary.md")),
+        (
+            "git-diff-commit",
+            include_str!("../prompts/git-diff-commit.md"),
+        ),
+    ])
+});
 
 pub fn base_call(
     system_prompt: &str,
@@ -13,8 +20,6 @@ pub fn base_call(
     config: &config::Config,
     private_mode: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    println!("Asking AI");
-
     let client = Client::new();
 
     let ai_config = {
@@ -42,8 +47,6 @@ pub fn base_call(
             ]
         }))
         .send()?;
-
-    println!("Status: {}", response.status());
 
     let response_json: serde_json::Value = response.json()?;
 

@@ -1,3 +1,4 @@
+pub mod git;
 pub mod net;
 pub mod tv;
 pub mod yt;

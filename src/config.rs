@@ -32,8 +32,6 @@ pub struct TvConfig {
 }
 
 pub fn load_config() -> Config {
-    println!("Loading Config!");
-
     if let Some(proj_dirs) = ProjectDirs::from("com", "jonahmakowski", "cli-tool") {
         let config_path = proj_dirs.config_dir().join("config.yaml");
 
