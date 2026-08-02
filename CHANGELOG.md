@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Convert comments to doc comments for CLI help visibility
 - Make the workflow valid
 - Simplify config structs with public fields and simplify dependencies
+- Bump version to 0.5.2
 
 ## [0.5.1] - 2026-08-02
 
