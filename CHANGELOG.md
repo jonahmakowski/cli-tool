@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Made pre-commit run rustfmt instead of just checking
 - Restructure config loading with match expressions
+- Open generated commit message in git editor automatically
 
 ### Fixed
 

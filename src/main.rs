@@ -148,7 +148,7 @@ fn main() {
         },
         Command::Code { target } => match target {
             CodeTarget::GitCommit { breaking, intent } => {
-                plugins::git::write_commit_message_wrapper(&config, cli.private, breaking, &intent);
+                plugins::git::git_commit(&config, cli.private, breaking, &intent);
             }
         },
     }
