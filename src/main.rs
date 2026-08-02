@@ -142,7 +142,7 @@ fn main() {
             },
             NetTarget::Search { target } => match target {
                 SearchTarget::Tvdb { parameter, max } => {
-                    plugins::tv::tui_search(config.tv.api_key(), &parameter, max);
+                    plugins::tv::tui_search(&config.tv.api_key, &parameter, max);
                 }
             },
         },

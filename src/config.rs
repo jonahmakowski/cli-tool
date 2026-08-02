@@ -1,34 +1,29 @@
 use directories::ProjectDirs;
-use getset::Getters;
 use serde::Deserialize;
 use std::fs;
 
-#[derive(Debug, Deserialize, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Deserialize)]
 pub struct Config {
     pub ai: AiConfig,
     pub tv: TvConfig,
 }
 
-#[derive(Debug, Deserialize, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Deserialize)]
 pub struct AiConfig {
     pub private: AiConfigChild,
     pub public: AiConfigChild,
 }
 
-#[derive(Debug, Deserialize, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Deserialize)]
 pub struct AiConfigChild {
-    api_key: String,
-    model: String,
-    base_url: String,
+    pub api_key: String,
+    pub model: String,
+    pub base_url: String,
 }
 
-#[derive(Debug, Deserialize, Getters)]
-#[getset(get = "pub")]
+#[derive(Debug, Deserialize)]
 pub struct TvConfig {
-    api_key: Option<String>,
+    pub api_key: Option<String>,
 }
 
 pub fn load_config() -> Config {

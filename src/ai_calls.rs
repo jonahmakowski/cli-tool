@@ -31,10 +31,10 @@ pub fn base_call(
     };
 
     let response = client
-        .post(format!("{}/chat/completions", ai_config.base_url()))
-        .bearer_auth(ai_config.api_key())
+        .post(format!("{}/chat/completions", ai_config.base_url))
+        .bearer_auth(&ai_config.api_key)
         .json(&json!({
-            "model": ai_config.model(),
+            "model": ai_config.model,
             "messages": [
                 {
                     "role": "system",
