@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+# Prevent the amend from triggering this hook recursively.
+if [ "${GIT_CLIFF_AMENDING:-}" = "1" ]; then
+    exit 0
+fi
+
+git cliff --output CHANGELOG.md
+git add CHANGELOG.md
+
+# Do nothing if git-cliff produced no changes.
+if git diff --cached --quiet -- CHANGELOG.md; then
+    exit 0
+fi
+
+GIT_CLIFF_AMENDING=1 \
+    git commit --amend --no-edit --no-verify

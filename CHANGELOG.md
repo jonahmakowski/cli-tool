@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Chore: add git hooks
+
 ### Changed
 
 - Can load TVDB keys
@@ -12,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorganize tvbd search to be under the search subcommand
 - Run rustfmt
 - Seperate search into two functions, making it easier to reuse.
+- Bump version
+- Hopefully fix changelog generation
 
 ### Removed
 
