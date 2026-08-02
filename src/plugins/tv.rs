@@ -156,3 +156,36 @@ pub fn tui_search(api_key: &Option<String>, query: &str, limit: i64) {
         None => eprintln!("No api key set, please set it in the config file."),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cached_token_is_valid_for_three_weeks() {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let token = CachedToken {
+            token: "token".into(),
+            created_at: now - THREE_WEEKS + 1,
+        };
+
+        assert!(token.is_valid().unwrap());
+    }
+
+    #[test]
+    fn cached_token_expires_at_three_weeks() {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let token = CachedToken {
+            token: "token".into(),
+            created_at: now - THREE_WEEKS,
+        };
+
+        assert!(!token.is_valid().unwrap());
+    }
+}

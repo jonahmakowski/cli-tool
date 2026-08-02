@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Made pre-commit run rustfmt instead of just checking
 
+### Fixed
+
+- Add AI generated tests to ai_calls.rs and tv.rs
+
 ## [0.4.0] - 2026-08-02
 
 ### Added
