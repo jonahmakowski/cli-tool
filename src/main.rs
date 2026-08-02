@@ -54,10 +54,10 @@ enum NetTarget {
         #[command(subcommand)]
         target: NetDownloadTarget,
     },
-    /// Get data from the TVBD
-    Tv {
+    /// Search various sources
+    Search {
         #[command(subcommand)]
-        target: TvTarget,
+        target: SearchTarget,
     }
 }
 
@@ -74,9 +74,9 @@ enum NetDownloadTarget {
 }
 
 #[derive(Subcommand)]
-enum TvTarget {
-    /// Search for something on the TVBD
-    Search {
+enum SearchTarget {
+    /// Search for something on the tvdb
+    Tvdb {
         /// What you want to search for
         parameter: String,
         /// Maximum number of results, defaults to 10
@@ -121,8 +121,8 @@ fn main() {
                     }
                 }
             },
-            NetTarget::Tv { target } => match target {
-                TvTarget::Search { parameter, max } => {
+            NetTarget::Search { target } => match target {
+                SearchTarget::Tvdb { parameter, max } => {
                     let api_key = config.tv.api_key().clone().unwrap();
                     plugins::tv::search(&api_key, &parameter, max).expect("Failed");
                 }
