@@ -1,8 +1,8 @@
+use directories::ProjectDirs;
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
-use directories::ProjectDirs;
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::fs;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 const TVBD_API_BASE: &str = "https://api4.thetvdb.com/v4";
 const THREE_WEEKS: u64 = 3 * 7 * 24 * 60 * 60;
@@ -30,10 +30,8 @@ struct CachedToken {
 
 impl CachedToken {
     fn is_valid(&self) -> Result<bool, Box<dyn std::error::Error>> {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)?
-            .as_secs();
-        
+        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+
         if now - self.created_at < THREE_WEEKS {
             return Ok(true);
         }
@@ -88,11 +86,11 @@ fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
 
     let data = client
         .post(format!("{}{}", TVBD_API_BASE, "/login"))
-        .json(&ApiKey {apikey: api_key})
+        .json(&ApiKey { apikey: api_key })
         .send()?
         .text()?;
 
-    let token  = serde_json::from_str::<BearerResponse>(&data)?.data.token;
+    let token = serde_json::from_str::<BearerResponse>(&data)?.data.token;
 
     let new_cache = CachedToken {
         token: token.clone(),
@@ -105,7 +103,11 @@ fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
     return Ok(token);
 }
 
-pub fn search(api_key: &str, query: &str, limit: i64) -> Result<(), Box<dyn std::error::Error>> {
+fn search(
+    api_key: &str,
+    query: &str,
+    limit: i64,
+) -> Result<SearchResponse, Box<dyn std::error::Error>> {
     let bearer = get_bearer(api_key)?;
 
     let client = Client::new();
@@ -124,16 +126,32 @@ pub fn search(api_key: &str, query: &str, limit: i64) -> Result<(), Box<dyn std:
     let parsed_data: SearchResponse = serde_json::from_str(&data)?;
 
     if parsed_data.status != "success" {
-        return Err("Request did not return success".into())
+        return Err("Request did not return success".into());
     }
 
-    for (index, response) in parsed_data.data.iter().enumerate() {
-        println!("---------------- Result #{} ----------------", index+1);
-        println!("Title: {}", response.name);
-        println!("Object ID: {}", response.object_id);
-        println!("First Air Time: {}", response.first_air_time.as_deref().unwrap_or("null".into()));
-        println!("Overview: {}", response.overview.as_deref().unwrap_or("null".into()))
-    }
+    Ok(parsed_data)
+}
 
-    Ok(())
+pub fn tui_search(api_key: &Option<String>, query: &str, limit: i64) {
+    match api_key {
+        Some(key) => match search(key, query, limit) {
+            Ok(data) => {
+                for (index, response) in data.data.iter().enumerate() {
+                    println!("---------------- Result #{} ----------------", index + 1);
+                    println!("Title: {}", response.name);
+                    println!("Object ID: {}", response.object_id);
+                    println!(
+                        "First Air Time: {}",
+                        response.first_air_time.as_deref().unwrap_or("null".into())
+                    );
+                    println!(
+                        "Overview: {}",
+                        response.overview.as_deref().unwrap_or("null".into())
+                    )
+                }
+            }
+            Err(err) => eprintln!("Something went wrong: {}", err),
+        },
+        None => eprintln!("No api key set, please set it in the config file."),
+    }
 }
