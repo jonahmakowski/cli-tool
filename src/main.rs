@@ -24,12 +24,12 @@ enum Command {
         #[command(subcommand)]
         target: SummarizeTarget,
     },
-    // Get data from the internet
+    /// Get data from the internet
     Net {
         #[command(subcommand)]
         target: NetTarget,
     },
-    // Run commands that modify or are useful for code
+    /// Run commands that modify or are useful for code
     Code {
         #[command(subcommand)]
         target: CodeTarget,
