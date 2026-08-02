@@ -58,7 +58,7 @@ enum NetTarget {
     Search {
         #[command(subcommand)]
         target: SearchTarget,
-    }
+    },
 }
 
 #[derive(Subcommand)]
@@ -82,7 +82,7 @@ enum SearchTarget {
         /// Maximum number of results, defaults to 10
         #[arg(default_value_t = 10)]
         max: i64,
-    }
+    },
 }
 
 fn main() {
@@ -123,10 +123,9 @@ fn main() {
             },
             NetTarget::Search { target } => match target {
                 SearchTarget::Tvdb { parameter, max } => {
-                    let api_key = config.tv.api_key().clone().unwrap();
-                    plugins::tv::search(&api_key, &parameter, max).expect("Failed");
+                    plugins::tv::tui_search(config.tv.api_key(), &parameter, max);
                 }
-            }
+            },
         },
     }
 }

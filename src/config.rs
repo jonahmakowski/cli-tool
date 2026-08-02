@@ -28,7 +28,7 @@ pub struct AiConfigChild {
 #[derive(Debug, Deserialize, Getters)]
 #[getset(get = "pub")]
 pub struct TvConfig {
-    api_key: Option<String>
+    api_key: Option<String>,
 }
 
 pub fn load_config() -> Config {
