@@ -42,21 +42,18 @@ pub fn run_summarize_yt(config: &crate::config::Config, url: &str, private_mode:
 
     match get_subs {
         Ok(subtitles) => {
-            match ai_calls::use_pattern("yt-summary", &subtitles, &config, private_mode) {
+            match ai_calls::use_pattern("yt-summary", &subtitles, config, private_mode) {
                 Ok(result) => {
                     println!("Summary:");
                     println!("{result}");
-                    return ();
                 }
                 Err(err) => {
                     println!("Error: {}", err);
-                    return ();
                 }
             }
         }
         Err(err) => {
             println!("Error: {}", err);
-            return ();
         }
     }
 }
@@ -68,7 +65,7 @@ pub fn download_yt(url: &str, target_location: &str) -> Result<(), Box<dyn std::
 
     command.args(["-t", "mp4"]);
 
-    if target_location != "" {
+    if !target_location.is_empty() {
         command.arg("--output").arg(target_location);
     }
 

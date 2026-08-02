@@ -66,5 +66,5 @@ pub fn use_pattern(
 
     let system_prompt = PATTERNS[pattern];
 
-    base_call(&system_prompt, user_message, config, private_mode)
+    base_call(system_prompt, user_message, config, private_mode)
 }

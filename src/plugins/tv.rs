@@ -46,6 +46,7 @@ pub struct SearchResponse {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct SearchResult {
     #[serde(rename = "objectID")]
     pub object_id: String,
@@ -97,10 +98,10 @@ fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
         created_at: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
     };
 
-    fs::create_dir_all(&cache_dir)?;
+    fs::create_dir_all(cache_dir)?;
     fs::write(&cache_file, serde_json::to_vec_pretty(&new_cache).unwrap())?;
 
-    return Ok(token);
+    Ok(token)
 }
 
 fn search(
@@ -142,11 +143,11 @@ pub fn tui_search(api_key: &Option<String>, query: &str, limit: i64) {
                     println!("Object ID: {}", response.object_id);
                     println!(
                         "First Air Time: {}",
-                        response.first_air_time.as_deref().unwrap_or("null".into())
+                        response.first_air_time.as_deref().unwrap_or("null")
                     );
                     println!(
                         "Overview: {}",
-                        response.overview.as_deref().unwrap_or("null".into())
+                        response.overview.as_deref().unwrap_or("null")
                     )
                 }
             }
