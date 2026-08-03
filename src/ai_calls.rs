@@ -1,5 +1,4 @@
 use crate::config;
-use reqwest::blocking::Client;
 use serde_json::json;
 use std::collections::HashMap;
 use std::sync::LazyLock;
@@ -20,8 +19,6 @@ pub fn base_call(
     config: &config::Config,
     private_mode: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let client = Client::new();
-
     let ai_config = {
         if private_mode {
             &config.ai.private
@@ -30,7 +27,7 @@ pub fn base_call(
         }
     };
 
-    let response = client
+    let response = crate::WEB_CLIENT
         .post(format!("{}/chat/completions", ai_config.base_url))
         .bearer_auth(&ai_config.api_key)
         .json(&json!({

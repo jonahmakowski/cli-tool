@@ -1,3 +1,4 @@
+use html2md::parse_html;
 use reqwest::blocking::Client;
 use reqwest::header;
 use serde::Deserialize;
@@ -67,9 +68,7 @@ pub fn get_public_ip(ip_type: &IpType) -> Result<String, Box<dyn std::error::Err
 fn get_ip_info() -> Result<IpInfo, Box<dyn std::error::Error>> {
     let public_ip = get_public_ip(&IpType::V4)?;
 
-    let client = Client::new();
-
-    let data = client
+    let data = crate::WEB_CLIENT
         .get(format!("https://free.freeipapi.com/api/json/{}", public_ip))
         .send()?
         .text()?;
@@ -80,9 +79,7 @@ fn get_ip_info() -> Result<IpInfo, Box<dyn std::error::Error>> {
 }
 
 fn query_weather(ip_info: &IpInfo) -> Result<WeatherData, Box<dyn std::error::Error>> {
-    let client = Client::new();
-
-    let result = client
+    let result = crate::WEB_CLIENT
         .get(format!("https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,precipitation,apparent_temperature&timezone=auto", ip_info.latitude, ip_info.longitude))
         .send()?
         .text()?;
@@ -126,6 +123,24 @@ pub fn get_weather_data() {
         },
         Err(err) => eprintln!("Error: {}", err),
     }
+}
+
+pub fn fetch(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let data = crate::WEB_CLIENT.get(url).send()?;
+
+    if !data.status().is_success() {
+        return Err("Failed to connect correctly".into());
+    }
+
+    let html = data.text()?;
+
+    Ok(html)
+}
+
+pub fn fetch_as_markdown(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let markdown = parse_html(&fetch(url)?);
+
+    Ok(markdown)
 }
 
 #[cfg(test)]

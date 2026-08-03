@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add fetch command for webpage retrieval with markdown conversion
+
+## [0.7.0] - 2026-08-03
+
+### Added
+
 - Add validation for empty git diff before generating commit message
 - Add unit tests for get_public_ip
 - Add invalid config parsing test
@@ -308,7 +314,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.7.0..HEAD
+[0.7.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..v0.7.0
 [0.6.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..v0.6.6
 [0.6.5-beta6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta5..v0.6.5-beta6
 [0.6.5-beta5]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta4..v0.6.5-beta5

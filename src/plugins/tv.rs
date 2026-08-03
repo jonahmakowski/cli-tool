@@ -1,5 +1,4 @@
 use directories::ProjectDirs;
-use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -83,9 +82,7 @@ fn get_bearer(api_key: &str) -> Result<String, Box<dyn std::error::Error>> {
 
     println!("Cache file dosen't exist or key is outdated, running internet mode");
 
-    let client = Client::new();
-
-    let data = client
+    let data = crate::WEB_CLIENT
         .post(format!("{}{}", TVBD_API_BASE, "/login"))
         .json(&ApiKey { apikey: api_key })
         .send()?
@@ -111,9 +108,7 @@ fn search(
 ) -> Result<SearchResponse, Box<dyn std::error::Error>> {
     let bearer = get_bearer(api_key)?;
 
-    let client = Client::new();
-
-    let data = client
+    let data = crate::WEB_CLIENT
         .get(format!(
             "{}/search?query={}&limit={}",
             TVBD_API_BASE,

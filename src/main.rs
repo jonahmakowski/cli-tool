@@ -2,6 +2,10 @@ mod ai_calls;
 mod config;
 mod plugins;
 use clap::{Parser, Subcommand};
+use reqwest::blocking::Client;
+use std::sync::LazyLock;
+
+static WEB_CLIENT: LazyLock<Client> = LazyLock::new(Client::new);
 
 #[derive(Parser)]
 struct Cli {
@@ -58,7 +62,8 @@ enum NetTarget {
     Weather,
     /// Get your public ip address
     Ip {
-        #[arg(short = '6', help = "Get IpV6 information")]
+        /// Get IpV6 information
+        #[arg(short = '6')]
         ip_v6: bool,
     },
     /// Download data from various sources
@@ -70,6 +75,14 @@ enum NetTarget {
     Search {
         #[command(subcommand)]
         target: SearchTarget,
+    },
+    /// Get the contents of a webpage
+    Fetch {
+        /// URL you want to fetch
+        url: String,
+        /// Get your result in markdown format (or html by default)
+        #[arg(long, short = 'm')]
+        markdown: bool,
     },
 }
 
@@ -175,6 +188,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     );
                 }
             },
+            NetTarget::Fetch { url, markdown } => {
+                if markdown {
+                    println!("{}", plugins::net::fetch_as_markdown(&url)?);
+                } else {
+                    println!("{}", plugins::net::fetch(&url)?);
+                }
+            }
         },
         Command::Code { target } => match target {
             CodeTarget::GitCommit { breaking, intent } => {
