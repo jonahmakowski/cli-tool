@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved config into lazylock
 - Replace string formatting with formatdoc for yaml config
+- Bump version number
 
 ### Fixed
 
