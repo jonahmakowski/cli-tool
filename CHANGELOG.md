@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bump version to beta
+
+## [main] - 2026-08-03
+
+### Changed
+
 - Replace ConfigPath with Config command having Path and Show subcommands
 - Ensure release directory exists
 
@@ -246,7 +252,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/main..HEAD
+[main]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..main
 [0.6.4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.3..v0.6.4
 [0.6.3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.2..v0.6.3
 [0.6.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.1..v0.6.2
