@@ -122,6 +122,8 @@ enum CodeTarget {
         #[arg(default_value_t = String::new())]
         intent: String,
     },
+    #[command(name = "run_lint")]
+    RunLint,
 }
 
 #[derive(Subcommand)]
@@ -198,7 +200,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         Command::Code { target } => match target {
             CodeTarget::GitCommit { breaking, intent } => {
-                plugins::git::git_commit(&config, cli.private, breaking, &intent);
+                plugins::code::git::git_commit(&config, cli.private, breaking, &intent);
+            }
+            CodeTarget::RunLint => {
+                plugins::code::repo_functions::run_lint()?;
             }
         },
         Command::Doctor => {}

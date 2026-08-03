@@ -1,6 +1,8 @@
 use super::ai_calls;
+use anyhow::{Context, Result, bail};
 use directories::ProjectDirs;
 use std::fs;
+use std::path::PathBuf;
 use std::process::Command;
 
 fn get_git_diff() -> Result<String, Box<dyn std::error::Error>> {
@@ -76,4 +78,20 @@ pub fn git_commit(
         }
         Err(err) => eprintln!("Failed: {}", err),
     }
+}
+
+pub fn git_repo_root() -> Result<PathBuf> {
+    let output = Command::new("git")
+        .args(["rev-parse", "--show-toplevel"])
+        .output()
+        .context("failed to run git")?;
+
+    if !output.status.success() {
+        bail!("not inside a Git working tree");
+    }
+
+    let root =
+        String::from_utf8(output.stdout).context("git returned a non-UTF-8 repository path")?;
+
+    Ok(PathBuf::from(root.trim()))
 }

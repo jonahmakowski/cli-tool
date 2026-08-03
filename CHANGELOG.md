@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add fetch command for webpage retrieval with markdown conversion
+- Add linting system
 
 ## [0.7.0] - 2026-08-03
 
