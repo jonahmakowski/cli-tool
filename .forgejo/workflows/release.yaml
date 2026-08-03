@@ -11,9 +11,6 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -27,7 +24,7 @@ jobs:
           ref: ${{ inputs.release_tag || forgejo.ref_name }}
 
       - name: Install git-cliff
-        uses: taiki-e/install-action@git-cliff
+        uses: https://github.com/taiki-e/install-action@git-cliff
 
       - name: Determine release metadata
         id: metadata
