@@ -105,7 +105,7 @@ jobs:
           repo: ${{ forgejo.repository }}
           token: ${{ secrets.FORGEJO_TOKEN }}
           tag: ${{ forgejo.ref_name }}
-          #release-dir: release
+          release-dir: release
           release-notes: ${{ steps.changelog.outputs.notes }}
       
       - name: Install GitHub CLI
