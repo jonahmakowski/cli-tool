@@ -82,20 +82,17 @@ mod tests {
     use std::path::Path;
     use tempfile::tempdir;
 
-    fn create_mock_config_file(
-        dir: &Path,
-        text: &str,
-    ) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    fn create_mock_config_file(dir: &Path, text: &str) -> PathBuf {
         let temp_file = dir.join("config.yaml");
 
-        fs::write(&temp_file, text)?;
+        fs::write(&temp_file, text).unwrap();
 
-        Ok(temp_file)
+        temp_file
     }
 
     #[test]
-    fn valid_config() -> Result<(), Box<dyn std::error::Error>> {
-        let temp_dir = tempdir()?;
+    fn valid_config() {
+        let temp_dir = tempdir().unwrap();
 
         let config_valid = indoc! {"
             ai:
@@ -111,10 +108,10 @@ mod tests {
                 api_key: \"tvdb_key\"
         "};
 
-        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
         assert_eq!(
-            load_config(Some(config_path))?,
+            load_config(Some(config_path)).unwrap(),
             Config {
                 ai: AiConfig {
                     private: AiConfigChild {
@@ -133,13 +130,11 @@ mod tests {
                 })
             }
         );
-
-        Ok(())
     }
 
     #[test]
-    fn valid_config_no_tv() -> Result<(), Box<dyn std::error::Error>> {
-        let temp_dir = tempdir()?;
+    fn valid_config_no_tv() {
+        let temp_dir = tempdir().unwrap();
 
         let config_valid = indoc! {"
             ai:
@@ -153,10 +148,10 @@ mod tests {
                     base_url: \"https://example.com/v1\"
         "};
 
-        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
         assert_eq!(
-            load_config(Some(config_path))?,
+            load_config(Some(config_path)).unwrap(),
             Config {
                 ai: AiConfig {
                     private: AiConfigChild {
@@ -173,12 +168,10 @@ mod tests {
                 tv: None,
             }
         );
-
-        Ok(())
     }
     #[test]
-    fn invalid_config() -> Result<(), Box<dyn std::error::Error>> {
-        let temp_dir = tempdir()?;
+    fn invalid_config() {
+        let temp_dir = tempdir().unwrap();
 
         let config_valid = indoc! {"
             ai:
@@ -193,13 +186,13 @@ mod tests {
                 api_key: \"tvdb_key\"
         "};
 
-        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
         match load_config(Some(config_path)) {
             Ok(_) => panic!(),
             Err(err) => {
                 if let ConfigError::Parse { .. } = err {
-                    return Ok(());
+                    return;
                 }
 
                 panic!()

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add unit tests for get_public_ip
 - Add invalid config parsing test
 
+### Removed
+
+- Remove error handling in trust functions and tests
+
 ## [0.6.6] - 2026-08-03
 
 ### Changed
