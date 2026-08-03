@@ -79,6 +79,11 @@ jobs:
           prerelease: ${{ steps.metadata.outputs.prerelease }}
           skip-assets: true
 
+      - name: Install Github CLI
+        run: |
+          apt-get update
+          apt-get install gh
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
