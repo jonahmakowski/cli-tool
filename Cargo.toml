@@ -12,3 +12,5 @@ serde = { version = "1.0.228", features = ["derive"] }
 yaml_serde = "0.10.4"
 directories = "6.0.0"
 urlencoding = "2.1.3"
+thiserror = "2.0.19"
+indexmap = "2.14.0"

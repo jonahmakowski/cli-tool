@@ -2,9 +2,6 @@ mod ai_calls;
 mod config;
 mod plugins;
 use clap::{Parser, Subcommand};
-use std::sync::LazyLock;
-
-static CONFIG: LazyLock<config::Config> = LazyLock::new(config::load_config);
 
 #[derive(Parser)]
 struct Cli {
@@ -37,6 +34,7 @@ enum Command {
         #[command(subcommand)]
         target: CodeTarget,
     },
+    Doctor,
 }
 
 #[derive(Subcommand)]
@@ -107,13 +105,19 @@ enum CodeTarget {
     },
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
+
+    if let Command::Doctor = cli.command {
+        plugins::doctor::run_checks_graphic();
+    }
+
+    let config = config::load_config()?;
 
     match cli.command {
         Command::Summarize { target } => match target {
             SummarizeTarget::Yt { url } => {
-                plugins::yt::run_summarize_yt(&CONFIG, &url, cli.private);
+                plugins::yt::run_summarize_yt(&config, &url, cli.private);
             }
         },
         Command::Net { target } => match target {
@@ -144,14 +148,17 @@ fn main() {
             },
             NetTarget::Search { target } => match target {
                 SearchTarget::Tvdb { parameter, max } => {
-                    plugins::tv::tui_search(&CONFIG.tv.api_key, &parameter, max);
+                    plugins::tv::tui_search(&config.tv.api_key, &parameter, max);
                 }
             },
         },
         Command::Code { target } => match target {
             CodeTarget::GitCommit { breaking, intent } => {
-                plugins::git::git_commit(&CONFIG, cli.private, breaking, &intent);
+                plugins::git::git_commit(&config, cli.private, breaking, &intent);
             }
         },
+        Command::Doctor => {}
     }
+
+    Ok(())
 }
