@@ -2,105 +2,73 @@ name: Build releases
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag to release when running manually, for example v0.6.5-beta3"
+        required: false
+        type: string
   push:
     tags:
-     - "v*"
+      - "v*"
 
-jobs:  
-  # build:
-  #   runs-on: metal
+permissions:
+  contents: write
 
-  #   strategy:
-  #     matrix:
-  #       include:
-  #         - target: x86_64-unknown-linux-gnu
-  #         - target: aarch64-unknown-linux-gnu
-  #         - target: x86_64-pc-windows-gnu
-  #         # Macos builds are not yet functional, this needs more tweaking
-  #         #- target: x86_64-apple-darwin
-  #         #- target: aarch64-apple-darwin
-
-  #   steps:
-  #     - name: Cache Rust
-  #       uses: actions/cache@v5
-  #       id: cache-rust
-  #       with:
-  #         path: |
-  #           ~/.cargo/bin/
-  #           ~/.rustup/
-  #           ~/.cargo/env
-  #         key: ${{ runner.os }}-rust
-      
-  #     - uses: actions/checkout@v3
-
-  #     - name: Install minimal Rust
-  #       shell: bash
-  #       run: |
-  #         set -e
-  #         if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
-  #           curl https://sh.rustup.rs -sSf | sh -s -- -y
-  #         fi
-
-  #     - name: Add cargo to PATH
-  #       run: echo "PATH=$HOME/.cargo/bin:$PATH" >> $FORGEJO_ENV
-          
-  #     - name: Install cross
-  #       run: cargo install cross --git https://github.com/cross-rs/cross
-
-  #     - name: Build
-  #       run: cross build --release --target ${{ matrix.target }}
-
-  #     - name: Package binary
-  #       run: |
-  #         mkdir -p dist
-  #         cp target/${{ matrix.target }}/release/cli-tool* dist/
-  #       shell: bash
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: cli-tool-${{ matrix.target }}
-  #         path: dist/
-  
+jobs:
   release:
-    # needs: build
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out source
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
-
-      # - name: Download build artifacts
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     path: release
+          ref: ${{ inputs.release_tag || forgejo.ref_name }}
 
       - name: Install git-cliff
-        uses: https://github.com/taiki-e/install-action@git-cliff
-      
-      # - name: Archive artifacts
-      #   run: |
-      #     cd release
-      #     for dir in */; do
-      #       tar -czf "${dir%/}.tar.gz" "$dir"
-      #       rm -rf "$dir"
-      #     done
+        uses: taiki-e/install-action@git-cliff
+
+      - name: Determine release metadata
+        id: metadata
+        env:
+          RELEASE_TAG_INPUT: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${RELEASE_TAG_INPUT:-${FORGEJO_REF_NAME:-${GITHUB_REF_NAME}}}"
+
+          if [[ -z "$tag" || "$tag" == "main" || "$tag" == "master" ]]; then
+            echo "A release tag is required. Run this workflow from a tag or provide release_tag." >&2
+            exit 1
+          fi
+
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-((alpha|beta|rc)[0-9]*))?$ ]]; then
+            echo "Release tag '$tag' is not a supported semantic version tag" >&2
+            exit 1
+          fi
+
+          if [[ "$tag" =~ -(alpha|beta|rc)[0-9]*$ ]]; then
+            prerelease=true
+          else
+            prerelease=false
+          fi
+
+          {
+            echo "tag=$tag"
+            echo "prerelease=$prerelease"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate release notes
         id: changelog
+        shell: bash
         run: |
+          set -euo pipefail
           {
             echo 'notes<<EOF'
             git-cliff --latest
             echo EOF
           } >> "$GITHUB_OUTPUT"
-      
-      - name: Create dummy file
-        run: |
-          mkdir -p release
-          touch dummy.txt
 
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2
@@ -109,22 +77,28 @@ jobs:
           url: https://git.jonahmakowski.ca
           repo: ${{ forgejo.repository }}
           token: ${{ secrets.FORGEJO_TOKEN }}
-          tag: ${{ forgejo.ref_name }}
-          release-dir: release
+          tag: ${{ steps.metadata.outputs.tag }}
           release-notes: ${{ steps.changelog.outputs.notes }}
-      
-      - name: Install GitHub CLI
-        run: |
-          apt-get update
-          apt-get install -y gh
-          
+          prerelease: ${{ steps.metadata.outputs.prerelease }}
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        # Add `release/* \` after the first line of the run command to attach built executables
+          RELEASE_TAG: ${{ steps.metadata.outputs.tag }}
+          RELEASE_NOTES: ${{ steps.changelog.outputs.notes }}
+          PRERELEASE: ${{ steps.metadata.outputs.prerelease }}
+        shell: bash
         run: |
-          gh release create "${{ forgejo.ref_name }}" \
-            --title "${{ forgejo.ref_name }}" \
-            --notes "${{ steps.changelog.outputs.notes }}" \
+          set -euo pipefail
+          args=(
+            release create "$RELEASE_TAG"
+            --title "$RELEASE_TAG"
+            --notes "$RELEASE_NOTES"
             --repo jonahmakowski/cli-tool
-    
+          )
+
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+
+          gh "${args[@]}"
