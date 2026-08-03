@@ -96,6 +96,9 @@ jobs:
             git-cliff --latest
             echo EOF
           } >> "$GITHUB_OUTPUT"
+      
+      - name: Make sure release dir exists
+        run: mkdir -p release
 
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2
