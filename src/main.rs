@@ -35,6 +35,8 @@ enum Command {
         target: CodeTarget,
     },
     Doctor,
+    #[command(name = "config_path")]
+    ConfigPath,
 }
 
 #[derive(Subcommand)]
@@ -158,6 +160,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Command::Doctor => {}
+        Command::ConfigPath => println!("{}", config::default_path()?.to_string_lossy()),
     }
 
     Ok(())

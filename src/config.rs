@@ -3,26 +3,26 @@ use serde::Deserialize;
 use std::{fs, path::PathBuf};
 use thiserror::Error;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
     pub ai: AiConfig,
     pub tv: TvConfig,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct AiConfig {
     pub private: AiConfigChild,
     pub public: AiConfigChild,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct AiConfigChild {
     pub api_key: String,
     pub model: String,
     pub base_url: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct TvConfig {
     pub api_key: Option<String>,
 }
@@ -47,7 +47,7 @@ pub enum ConfigError {
     },
 }
 
-fn default_path() -> Result<PathBuf, ConfigError> {
+pub fn default_path() -> Result<PathBuf, ConfigError> {
     match ProjectDirs::from("com", "jonahmakowski", "cli-tool") {
         Some(proj_dirs) => Ok(proj_dirs.config_dir().join("config.yaml")),
         None => Err(ConfigError::NoProjectDirectory),
@@ -72,5 +72,108 @@ pub fn load_config(path: Option<PathBuf>) -> Result<Config, ConfigError> {
             path: config_path,
             source: err,
         }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use indoc::indoc;
+    use std::path::Path;
+    use tempfile::tempdir;
+
+    fn create_mock_config_file(
+        dir: &Path,
+        text: &str,
+    ) -> Result<PathBuf, Box<dyn std::error::Error>> {
+        let temp_file = dir.join("config.yaml");
+
+        fs::write(&temp_file, text)?;
+
+        Ok(temp_file)
+    }
+
+    #[test]
+    fn valid_config() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = tempdir()?;
+
+        let config_valid = indoc! {"
+            ai:
+                private:
+                    api_key: \"private_key\"
+                    model: \"private_model\"
+                    base_url: \"http://127.0.0.1:11434/v1\"
+                public:
+                    api_key: \"public_key\"
+                    model: \"public_model\"
+                    base_url: \"https://example.com/v1\"
+            tv:
+                api_key: \"tvdb_key\"
+        "};
+
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+
+        assert_eq!(
+            load_config(Some(config_path))?,
+            Config {
+                ai: AiConfig {
+                    private: AiConfigChild {
+                        api_key: "private_key".into(),
+                        model: "private_model".into(),
+                        base_url: "http://127.0.0.1:11434/v1".into(),
+                    },
+                    public: AiConfigChild {
+                        api_key: "public_key".into(),
+                        model: "public_model".into(),
+                        base_url: "https://example.com/v1".into(),
+                    }
+                },
+                tv: TvConfig {
+                    api_key: Some("tvdb_key".into()),
+                }
+            }
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn valid_config_no_tv() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = tempdir()?;
+
+        let config_valid = indoc! {"
+            ai:
+                private:
+                    api_key: \"private_key\"
+                    model: \"private_model\"
+                    base_url: \"http://127.0.0.1:11434/v1\"
+                public:
+                    api_key: \"public_key\"
+                    model: \"public_model\"
+                    base_url: \"https://example.com/v1\"
+        "};
+
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+
+        assert_eq!(
+            load_config(Some(config_path))?,
+            Config {
+                ai: AiConfig {
+                    private: AiConfigChild {
+                        api_key: "private_key".into(),
+                        model: "private_model".into(),
+                        base_url: "http://127.0.0.1:11434/v1".into(),
+                    },
+                    public: AiConfigChild {
+                        api_key: "public_key".into(),
+                        model: "public_model".into(),
+                        base_url: "https://example.com/v1".into(),
+                    }
+                },
+                tv: TvConfig { api_key: None }
+            }
+        );
+
+        Ok(())
     }
 }
