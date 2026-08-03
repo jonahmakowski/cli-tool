@@ -87,14 +87,15 @@ jobs:
       #       tar -czf "${dir%/}.tar.gz" "$dir"
       #       rm -rf "$dir"
       #     done
-      
-      - name: Generate release notes
-        run: git-cliff --latest > release-notes.md
 
-      - name: Verify release notes
+      - name: Generate release notes
+        id: changelog
         run: |
-          test -s release-notes.md
-          sed -n '1,80p' release-notes.md
+          {
+            echo 'notes<<EOF'
+            git-cliff --latest
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2
@@ -105,7 +106,7 @@ jobs:
           token: ${{ secrets.FORGEJO_TOKEN }}
           tag: ${{ forgejo.ref_name }}
           #release-dir: release
-          release-notes: release-notes.md
+          release-notes: ${{ steps.changelog.outputs.notes }}
       
       - name: Install GitHub CLI
         run: |
