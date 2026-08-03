@@ -34,9 +34,13 @@ enum Command {
         #[command(subcommand)]
         target: CodeTarget,
     },
+    /// Run diagnostics on your settings
     Doctor,
-    #[command(name = "config_path")]
-    ConfigPath,
+    /// Get information about your config
+    Config {
+        #[command(subcommand)]
+        target: ConfigTarget,
+    },
 }
 
 #[derive(Subcommand)]
@@ -107,11 +111,20 @@ enum CodeTarget {
     },
 }
 
+#[derive(Subcommand)]
+enum ConfigTarget {
+    /// Returns the default config path
+    Path,
+    /// Displays the current config
+    Show,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     if let Command::Doctor = cli.command {
         plugins::doctor::run_checks_graphic();
+        return Ok(());
     }
 
     let config = config::load_config(None)?;
@@ -169,7 +182,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Command::Doctor => {}
-        Command::ConfigPath => println!("{}", config::default_path()?.to_string_lossy()),
+        Command::Config { target } => match target {
+            ConfigTarget::Path => println!("{}", config::default_path()?.to_string_lossy()),
+            ConfigTarget::Show => println!("{:#?}", &config),
+        },
     }
 
     Ok(())

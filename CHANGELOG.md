@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Replace ConfigPath with Config command having Path and Show subcommands
+
 ### Fixed
 
 - Verify doctor command succeeds
