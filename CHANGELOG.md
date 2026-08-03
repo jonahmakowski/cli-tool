@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add doctor command for system health checks
+- Add optional config path parameter to load_config
 
 ### Changed
 

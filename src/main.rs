@@ -112,7 +112,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         plugins::doctor::run_checks_graphic();
     }
 
-    let config = config::load_config()?;
+    let config = config::load_config(None)?;
 
     match cli.command {
         Command::Summarize { target } => match target {

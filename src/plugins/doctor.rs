@@ -55,7 +55,7 @@ fn check_git() -> StatusCheck {
 }
 
 fn validate_config() -> StatusCheck {
-    match crate::config::load_config() {
+    match crate::config::load_config(None) {
         Ok(config) => {
             if config.tv.api_key.is_none() {
                 return StatusCheck::Warning(
