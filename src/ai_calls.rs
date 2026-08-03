@@ -75,25 +75,24 @@ pub fn use_pattern(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use indoc::formatdoc;
     use std::io::{Read, Write};
     use std::net::TcpListener;
     use std::thread;
 
     fn config(base_url: &str) -> config::Config {
-        let yaml = format!(
-            r#"
-ai:
-  private:
-    api_key: private-key
-    model: private-model
-    base_url: {base_url}
-  public:
-    api_key: public-key
-    model: public-model
-    base_url: {base_url}
-tv: {{}}
-"#
-        );
+        let yaml = formatdoc! {"
+            ai:
+                private:
+                    api_key: private-key
+                    model: private-model
+                    base_url: {base_url}
+                public:
+                    api_key: public-key
+                    model: public-model
+                    base_url: {base_url}
+            tv: {{}}
+        "};
         yaml_serde::from_str(&yaml).unwrap()
     }
 
