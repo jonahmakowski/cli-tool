@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved config into lazylock
 
+### Fixed
+
+- Make tv config optional and handle missing configuration gracefully
+
 ## [0.5.2] - 2026-08-02
 
 ### Changed

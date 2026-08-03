@@ -57,10 +57,19 @@ fn check_git() -> StatusCheck {
 fn validate_config() -> StatusCheck {
     match crate::config::load_config(None) {
         Ok(config) => {
-            if config.tv.api_key.is_none() {
-                return StatusCheck::Warning(
-                    "TVDB api key is not set, related functions will not work".into(),
-                );
+            match config.tv {
+                Some(key) => {
+                    if key.api_key.is_none() {
+                        return StatusCheck::Warning(
+                            "TVDB api key is not set, related functions will not work".into(),
+                        );
+                    }
+                }
+                None => {
+                    return StatusCheck::Warning(
+                        "TV Section is not set, related functions will not work".into(),
+                    );
+                }
             }
             StatusCheck::Passed(None)
         }

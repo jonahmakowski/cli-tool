@@ -150,7 +150,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
             NetTarget::Search { target } => match target {
                 SearchTarget::Tvdb { parameter, max } => {
-                    plugins::tv::tui_search(&config.tv.api_key, &parameter, max);
+                    plugins::tv::tui_search(
+                        &{
+                            match config.tv {
+                                Some(data) => data.api_key,
+                                None => None,
+                            }
+                        },
+                        &parameter,
+                        max,
+                    );
                 }
             },
         },

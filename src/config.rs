@@ -6,7 +6,7 @@ use thiserror::Error;
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
     pub ai: AiConfig,
-    pub tv: TvConfig,
+    pub tv: Option<TvConfig>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -128,9 +128,9 @@ mod tests {
                         base_url: "https://example.com/v1".into(),
                     }
                 },
-                tv: TvConfig {
+                tv: Some(TvConfig {
                     api_key: Some("tvdb_key".into()),
-                }
+                })
             }
         );
 
@@ -170,7 +170,7 @@ mod tests {
                         base_url: "https://example.com/v1".into(),
                     }
                 },
-                tv: TvConfig { api_key: None }
+                tv: None,
             }
         );
 
