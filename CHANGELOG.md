@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Skip release asset uploads
+
+## [0.6.5-beta4] - 2026-08-03
+
 ### Changed
 
 - Bumped version
@@ -274,7 +280,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta3..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta4..HEAD
+[0.6.5-beta4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta3..v0.6.5-beta4
 [0.6.5-beta3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta2..v0.6.5-beta3
 [0.6.5-beta2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta1..v0.6.5-beta2
 [0.6.5-beta1]: https://github.com/jonahmakowski/cli-tool/compare/main..v0.6.5-beta1
