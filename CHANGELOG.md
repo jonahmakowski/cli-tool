@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forgot to comment out a line
+
+## [0.6.1] - 2026-08-03
+
 ### Changed
 
 - Made releases work
@@ -205,7 +211,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.0..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.1..HEAD
+[0.6.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.0..v0.6.1
 [0.6.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.2..v0.6.0
 [0.5.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.1..v0.5.2
 [0.5.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.0..v0.5.1
