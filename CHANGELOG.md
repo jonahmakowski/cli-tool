@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add validation for empty git diff before generating commit message
+
+## [0.6.6] - 2026-08-03
+
 ### Changed
 
 - Bump version
@@ -292,7 +298,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..HEAD
+[0.6.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..v0.6.6
 [0.6.5-beta6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta5..v0.6.5-beta6
 [0.6.5-beta5]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta4..v0.6.5-beta5
 [0.6.5-beta4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta3..v0.6.5-beta4

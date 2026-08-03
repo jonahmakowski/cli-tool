@@ -30,6 +30,10 @@ fn write_commit_message(
 ) -> Result<String, Box<dyn std::error::Error>> {
     let diff = get_git_diff()?;
 
+    if diff.is_empty() {
+        return Err("Looks like nothing's staged! Maybe run `git add`?".into());
+    }
+
     let constructed_message = format!(
         "{}\n\nBreaking Change: {}\n\nIntent: {}",
         diff, breaking, intent
