@@ -127,3 +127,18 @@ pub fn get_weather_data() {
         Err(err) => eprintln!("Error: {}", err),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::net::{Ipv4Addr, Ipv6Addr};
+
+    #[test]
+    fn get_public_ip_valid() {
+        let ipv4 = get_public_ip(&IpType::V4).unwrap();
+        assert!(ipv4.parse::<Ipv4Addr>().is_ok());
+
+        let ipv6 = get_public_ip(&IpType::V6).unwrap();
+        assert!(ipv6.parse::<Ipv6Addr>().is_ok());
+    }
+}
