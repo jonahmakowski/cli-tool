@@ -97,8 +97,10 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
       
-      - name: Make sure release dir exists
-        run: mkdir -p release
+      - name: Create dummy file
+        run: |
+          mkdir -p release
+          touch dummy.txt
 
       - name: Create Forgejo release
         uses: actions/forgejo-release@v2

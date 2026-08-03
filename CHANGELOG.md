@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bump cli-tool version to 0.6.5-beta2 and adjust release workflow
+
+## [0.6.5-beta1] - 2026-08-03
+
+### Changed
+
 - Bump version to beta
 
 ## [main] - 2026-08-03
@@ -252,7 +258,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/main..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta1..HEAD
+[0.6.5-beta1]: https://github.com/jonahmakowski/cli-tool/compare/main..v0.6.5-beta1
 [main]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..main
 [0.6.4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.3..v0.6.4
 [0.6.3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.2..v0.6.3
