@@ -1,66 +1,66 @@
 name: Build releases
 
 on:
-#  workflow_dispatch:
-#  push:
-#    tags:
-#      - "v*"
+  workflow_dispatch:
+  push:
+    tags:
+     - "v*"
 
 jobs:  
-  build:
-    runs-on: metal
+  # build:
+  #   runs-on: metal
 
-    strategy:
-      matrix:
-        include:
-          - target: x86_64-unknown-linux-gnu
-          - target: aarch64-unknown-linux-gnu
-          - target: x86_64-pc-windows-gnu
-          # Macos builds are not yet functional, this needs more tweaking
-          #- target: x86_64-apple-darwin
-          #- target: aarch64-apple-darwin
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - target: x86_64-unknown-linux-gnu
+  #         - target: aarch64-unknown-linux-gnu
+  #         - target: x86_64-pc-windows-gnu
+  #         # Macos builds are not yet functional, this needs more tweaking
+  #         #- target: x86_64-apple-darwin
+  #         #- target: aarch64-apple-darwin
 
-    steps:
-      - name: Cache Rust
-        uses: actions/cache@v5
-        id: cache-rust
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.rustup/
-            ~/.cargo/env
-          key: ${{ runner.os }}-rust
+  #   steps:
+  #     - name: Cache Rust
+  #       uses: actions/cache@v5
+  #       id: cache-rust
+  #       with:
+  #         path: |
+  #           ~/.cargo/bin/
+  #           ~/.rustup/
+  #           ~/.cargo/env
+  #         key: ${{ runner.os }}-rust
       
-      - uses: actions/checkout@v3
+  #     - uses: actions/checkout@v3
 
-      - name: Install minimal Rust
-        shell: bash
-        run: |
-          set -e
-          if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-          fi
+  #     - name: Install minimal Rust
+  #       shell: bash
+  #       run: |
+  #         set -e
+  #         if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
+  #           curl https://sh.rustup.rs -sSf | sh -s -- -y
+  #         fi
 
-      - name: Add cargo to PATH
-        run: echo "PATH=$HOME/.cargo/bin:$PATH" >> $FORGEJO_ENV
+  #     - name: Add cargo to PATH
+  #       run: echo "PATH=$HOME/.cargo/bin:$PATH" >> $FORGEJO_ENV
           
-      - name: Install cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
+  #     - name: Install cross
+  #       run: cargo install cross --git https://github.com/cross-rs/cross
 
-      - name: Build
-        run: cross build --release --target ${{ matrix.target }}
+  #     - name: Build
+  #       run: cross build --release --target ${{ matrix.target }}
 
-      - name: Package binary
-        run: |
-          mkdir -p dist
-          cp target/${{ matrix.target }}/release/cli-tool* dist/
-        shell: bash
+  #     - name: Package binary
+  #       run: |
+  #         mkdir -p dist
+  #         cp target/${{ matrix.target }}/release/cli-tool* dist/
+  #       shell: bash
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: cli-tool-${{ matrix.target }}
-          path: dist/
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: cli-tool-${{ matrix.target }}
+  #         path: dist/
   
   release:
     needs: build
@@ -72,21 +72,21 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: release
+      # - name: Download build artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     path: release
 
       - name: Install git-cliff
         uses: https://github.com/taiki-e/install-action@git-cliff
       
-      - name: Archive artifacts
-        run: |
-          cd release
-          for dir in */; do
-            tar -czf "${dir%/}.tar.gz" "$dir"
-            rm -rf "$dir"
-          done
+      # - name: Archive artifacts
+      #   run: |
+      #     cd release
+      #     for dir in */; do
+      #       tar -czf "${dir%/}.tar.gz" "$dir"
+      #       rm -rf "$dir"
+      #     done
 
       - name: Generate release notes
         id: changelog
@@ -105,7 +105,7 @@ jobs:
           repo: ${{ forgejo.repository }}
           token: ${{ secrets.FORGEJO_TOKEN }}
           tag: ${{ forgejo.ref_name }}
-          release-dir: release
+          #release-dir: release
           release-notes: ${{ steps.changelog.outputs.notes }}
       
       - name: Install GitHub CLI
@@ -116,9 +116,9 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        # Add `release/* \` after the first line of the run command to attach built executables
         run: |
           gh release create "${{ forgejo.ref_name }}" \
-            release/* \
             --title "${{ forgejo.ref_name }}" \
             --notes "${{ steps.changelog.outputs.notes }}" \
             --repo jonahmakowski/cli-tool
