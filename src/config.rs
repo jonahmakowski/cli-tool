@@ -176,4 +176,34 @@ mod tests {
 
         Ok(())
     }
+    #[test]
+    fn invalid_config() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = tempdir()?;
+
+        let config_valid = indoc! {"
+            ai:
+                private:
+                    api_key: \"private_key\"
+                    model: \"private_model\"
+                    base_url: \"http://127.0.0.1:11434/v1\"
+                public:
+                    api_key: \"public_key\"
+                    model: \"public_model\"
+            tv:
+                api_key: \"tvdb_key\"
+        "};
+
+        let config_path = create_mock_config_file(temp_dir.path(), config_valid)?;
+
+        match load_config(Some(config_path)) {
+            Ok(_) => panic!(),
+            Err(err) => {
+                if let ConfigError::Parse { .. } = err {
+                    return Ok(());
+                }
+
+                panic!()
+            }
+        }
+    }
 }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add validation for empty git diff before generating commit message
 - Add unit tests for get_public_ip
+- Add invalid config parsing test
 
 ## [0.6.6] - 2026-08-03
 
