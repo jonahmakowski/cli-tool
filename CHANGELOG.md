@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Install Github CLI in release workflow
+- Bump version
 
 ## [0.6.5-beta5] - 2026-08-03
 
@@ -45,14 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bump version to beta
-
-## [main] - 2026-08-03
-
-### Changed
-
 - Replace ConfigPath with Config command having Path and Show subcommands
 - Ensure release directory exists
+- Bump version to beta
 
 ### Fixed
 
@@ -295,8 +291,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.5-beta4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta3..v0.6.5-beta4
 [0.6.5-beta3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta2..v0.6.5-beta3
 [0.6.5-beta2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta1..v0.6.5-beta2
-[0.6.5-beta1]: https://github.com/jonahmakowski/cli-tool/compare/main..v0.6.5-beta1
-[main]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..main
+[0.6.5-beta1]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..v0.6.5-beta1
 [0.6.4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.3..v0.6.4
 [0.6.3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.2..v0.6.3
 [0.6.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.1..v0.6.2
