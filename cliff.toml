@@ -6,8 +6,7 @@
 # See https://keats.github.io/tera/docs/#introduction
 header = """
 # Changelog\n
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n
+    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n
 """
 # A Tera template to be rendered for each release in the changelog.
 # See https://keats.github.io/tera/docs/#introduction
@@ -61,10 +60,15 @@ commit_parsers = [
     # Skip automated commits for updating the changlog
     { message = "^docs\\(changelog\\): Update changelog$", skip = true },
 
+    { message = "^ci", group = "CI" },
+    { message = "^.*\\(ci\\):.*$", group = "CI" },
+    { message = "^docs", group = "Docs" },
+    { message = "^.*\\(docs\\):.*$", group = "Docs" },
     { message = "^[a|A]dd", group = "Added" },
     { message = "^[s|S]upport", group = "Added" },
     { message = "^[r|R]emove", group = "Removed" },
     { message = "^.*: add", group = "Added" },
+    { message = "^.*: update", group = "Changed" },
     { message = "^.*: support", group = "Added" },
     { message = "^.*: remove", group = "Removed" },
     { message = "^.*: delete", group = "Removed" },

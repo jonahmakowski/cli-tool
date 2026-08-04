@@ -1,9 +1,8 @@
 # Changelog
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.0] - 2026-08-04
 
 ### Added
 
@@ -12,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add preflight checks and remove git hooks
 - Add post-command support for preflight checks
 - Add cargo test command
+
+### Changed
+
+- Bump version
 
 ## [0.7.0] - 2026-08-03
 
@@ -44,27 +47,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.5-beta5] - 2026-08-03
 
+### CI
+
+- Skip release asset uploads
+
 ### Changed
 
 - Bump version
 
-### Fixed
-
-- Skip release asset uploads
-
 ## [0.6.5-beta4] - 2026-08-03
+
+### CI
+
+- Hopefully fixed ci
 
 ### Changed
 
 - Bumped version
 
-### Fixed
-
-- Hopefully fixed ci
-
 ## [0.6.5-beta3] - 2026-08-03
 
-### Fixed
+### CI
 
 - Fixing release system (hopfully)
 
@@ -88,39 +91,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.4] - 2026-08-03
 
+### CI
+
+- Release system
+
 ### Changed
 
 - Revert "fix(ci): Hopefully this works now"
 
-### Fixed
-
-- Release system
-
 ## [0.6.3] - 2026-08-03
 
-### Changed
-
-- Bump version
-
-### Fixed
+### CI
 
 - Hopefully this works now
 
+### Changed
+
+- Bump version
+
 ## [0.6.2] - 2026-08-03
+
+### CI
+
+- Forgot to comment out a line
 
 ### Changed
 
 - Bump version
 
-### Fixed
-
-- Forgot to comment out a line
-
 ## [0.6.1] - 2026-08-03
+
+### CI
+
+- Made releases work
 
 ### Changed
 
-- Made releases work
 - Bump version
 
 ## [0.6.0] - 2026-08-03
@@ -143,13 +149,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.2] - 2026-08-02
 
-### Changed
+### CI
 
 - Disable release building until further notice
-- Convert comments to doc comments for CLI help visibility
+
+### Changed
+
 - Make the workflow valid
 - Simplify config structs with public fields and simplify dependencies
 - Bump version to 0.5.2
+
+### Docs
+
+- Convert comments to doc comments for CLI help visibility
 
 ## [0.5.1] - 2026-08-02
 
@@ -203,9 +215,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2026-07-19
 
-### Added
+### CI
 
 - Added caching for changlog construction
+- Add git-cliff to PATH when restoring from cache
+- Adding git-cliff to the path and installation conditions
+- Remove caching that isn't working
 
 ### Changed
 
@@ -215,20 +230,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Cliff.toml to ignore automated changelog commits
-- Add git-cliff to PATH when restoring from cache
-- Adding git-cliff to the path and installation conditions
-- Remove caching that isn't working
 
 ## [0.1.1] - 2026-07-18
 
-### Changed
+### CI
 
 - Add release publishing to github
+- Install github cli before using it
 
 ### Fixed
 
 - Made updating the changelog a "docs" type commit
-- Install github cli before using it
 
 ## [0.1.0] - 2026-07-18
 
@@ -240,13 +252,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.6] - 2026-07-18
 
+### CI
+
+- Release to use github link for install-action
+
 ### Changed
 
 - Update changelog
-
-### Fixed
-
-- Release to use github link for install-action
 
 ## [0.0.5] - 2026-07-17
 
@@ -254,13 +266,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add .forgejo/workflows/changelog.yaml
 
+### CI
+
+- Add manual trigger for changelog update
+
 ### Changed
 
 - Update .forgejo/workflows/release.yaml
 - Update changelog
 - Merge branch 'main' of https://git.jonahmakowski.ca/jonahmakowski/cli-tool
 - Update changelog
-- Add manual trigger for changelog update
 - Update changelog
 
 ### Fixed
@@ -318,7 +333,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.7.0..HEAD
+[0.8.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.7.0..v0.8.0
 [0.7.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..v0.7.0
 [0.6.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..v0.6.6
 [0.6.5-beta6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta5..v0.6.5-beta6
