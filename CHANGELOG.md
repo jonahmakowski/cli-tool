@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add fetch command for webpage retrieval with markdown conversion
 - Add linting system
 - Add preflight checks and remove git hooks
+- Add post-command support for preflight checks
 
 ## [0.7.0] - 2026-08-03
 
