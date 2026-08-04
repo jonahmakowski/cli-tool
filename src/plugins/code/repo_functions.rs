@@ -2,6 +2,7 @@ use super::git;
 use anyhow::Result;
 use indexmap::IndexMap;
 use serde::Deserialize;
+use std::path::PathBuf;
 use std::process::Command;
 use std::{fs, sync::LazyLock};
 use thiserror::Error;
@@ -61,6 +62,7 @@ struct RepoConfig {
 struct LintCommandConfig {
     name: String,
     command: Vec<String>,
+    post_command: Option<Vec<String>>,
 }
 
 fn load_config() -> Result<RepoConfig, ConfigError> {
@@ -95,12 +97,31 @@ fn load_config() -> Result<RepoConfig, ConfigError> {
     }
 }
 
+fn execute_command_from_vec(
+    command: &[String],
+    execution_location: &PathBuf,
+) -> Result<std::process::ExitStatus, std::io::Error> {
+    let mut cmd = Command::new(&command[0]);
+
+    cmd.current_dir(execution_location);
+
+    command.iter().enumerate().for_each(|(index, part)| {
+        if index != 0 {
+            cmd.arg(part);
+        }
+    });
+
+    cmd.status()
+}
+
 pub fn run_preflight() -> Result<(), RepoFuncError> {
     let conf = &(*REPO_CONFIG);
 
     match conf {
         Ok(conf) => match &conf.preflight_commands {
             Some(commands) => {
+                let git_repo_path = git::git_repo_root().unwrap();
+
                 if commands.is_empty() {
                     return Err(RepoFuncError::RequiredArgumentsNotProvided {
                         args: vec!["preflight_commands.*".to_string()],
@@ -119,24 +140,30 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                         });
                     }
 
-                    let mut cmd = Command::new(&command.command[0]);
-
-                    command
-                        .command
-                        .iter()
-                        .enumerate()
-                        .for_each(|(index, part)| {
-                            if index != 0 {
-                                cmd.arg(part);
-                            }
-                        });
-
-                    let out = cmd.status();
+                    let out = execute_command_from_vec(&command.command, &git_repo_path);
 
                     match out {
                         Ok(status) => {
                             if status.success() {
-                                results.insert(&command.name, true);
+                                if let Some(cmd) = &command.post_command {
+                                    let out = execute_command_from_vec(cmd, &git_repo_path);
+                                    match out {
+                                        Ok(status) => {
+                                            if status.success() {
+                                                results.insert(&command.name, true);
+                                            } else {
+                                                results.insert(&command.name, false);
+                                                failed = true;
+                                            }
+                                        }
+                                        Err(_) => {
+                                            results.insert(&command.name, false);
+                                            failed = true;
+                                        }
+                                    }
+                                } else {
+                                    results.insert(&command.name, true);
+                                }
                             } else {
                                 results.insert(&command.name, false);
                                 failed = true;

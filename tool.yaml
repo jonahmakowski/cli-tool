@@ -5,3 +5,4 @@ preflight_commands:
     command: ["cargo", "clippy", "--all-targets", "--all-features", "--", "-D", "warnings"]
   - name: Update Changelog
     command: ["git-cliff", "--output", "CHANGELOG.md"]
+    post_command: ["git", "add", "CHANGELOG.md"]
