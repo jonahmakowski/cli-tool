@@ -116,14 +116,17 @@ enum CodeTarget {
     #[command(name = "git_commit")]
     GitCommit {
         /// This is a breaking change
-        #[arg(long, default_value_t = false)]
+        #[arg(long, short = 'b', default_value_t = false)]
         breaking: bool,
+        /// Skip preflight tasks if defined in repo
+        #[arg(long, default_value_t = false)]
+        skip_preflight: bool,
         /// What was your goal with this commit
         #[arg(default_value_t = String::new())]
         intent: String,
     },
-    #[command(name = "run_lint")]
-    RunLint,
+    #[command(name = "run_preflight")]
+    RunPreflight,
 }
 
 #[derive(Subcommand)]
@@ -199,11 +202,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Command::Code { target } => match target {
-            CodeTarget::GitCommit { breaking, intent } => {
-                plugins::code::git::git_commit(&config, cli.private, breaking, &intent);
+            CodeTarget::GitCommit {
+                breaking,
+                skip_preflight,
+                intent,
+            } => {
+                plugins::code::git::git_commit(
+                    &config,
+                    cli.private,
+                    breaking,
+                    skip_preflight,
+                    &intent,
+                );
             }
-            CodeTarget::RunLint => {
-                plugins::code::repo_functions::run_lint()?;
+            CodeTarget::RunPreflight => {
+                plugins::code::repo_functions::run_preflight()?;
             }
         },
         Command::Doctor => {}

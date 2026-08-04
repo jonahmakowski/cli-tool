@@ -54,9 +54,14 @@ fn write_commit_message(
 pub fn git_commit(
     config: &crate::config::Config,
     private_mode: bool,
+    skip_preflight: bool,
     breaking: bool,
     intent: &str,
 ) {
+    if !skip_preflight && *super::repo_functions::REPO_CONFIG_EXISTS {
+        super::repo_functions::run_preflight().expect("Preflight failed");
+    }
+
     match write_commit_message(config, private_mode, breaking, intent) {
         Ok(response) => {
             let dirs = ProjectDirs::from("com", "jonahmakowski", "cli-tool").unwrap();

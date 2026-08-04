@@ -9,6 +9,7 @@ use thiserror::Error;
 const CONFIG_FILE: &str = "tool.yaml";
 
 static REPO_CONFIG: LazyLock<Result<RepoConfig, ConfigError>> = LazyLock::new(load_config);
+pub static REPO_CONFIG_EXISTS: LazyLock<bool> = LazyLock::new(|| REPO_CONFIG.is_ok());
 
 #[derive(Debug, Error)]
 pub enum ConfigError {
@@ -47,6 +48,8 @@ pub enum RepoFuncError {
     },
     #[error("required arguements not provided. This function requires: {:?}", args)]
     RequiredArgumentsNotProvided { args: Vec<String> },
+    #[error("config is not correct: {information}")]
+    Custom { information: String },
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -92,7 +95,7 @@ fn load_config() -> Result<RepoConfig, ConfigError> {
     }
 }
 
-pub fn run_lint() -> Result<(), RepoFuncError> {
+pub fn run_preflight() -> Result<(), RepoFuncError> {
     let conf = &(*REPO_CONFIG);
 
     match conf {
@@ -105,9 +108,10 @@ pub fn run_lint() -> Result<(), RepoFuncError> {
                 }
 
                 let mut results = IndexMap::new();
+                let mut failed = false;
 
                 for command in commands {
-                    println!("--------- {} ---------", command.name);
+                    println!("------------------ {} ------------------", command.name);
 
                     if command.command.is_empty() {
                         return Err(RepoFuncError::RequiredArgumentsNotProvided {
@@ -127,28 +131,37 @@ pub fn run_lint() -> Result<(), RepoFuncError> {
                             }
                         });
 
-                    let out = cmd.output();
+                    let out = cmd.status();
 
                     match out {
-                        Ok(data) => {
-                            if data.status.success() {
+                        Ok(status) => {
+                            if status.success() {
                                 results.insert(&command.name, true);
                             } else {
                                 results.insert(&command.name, false);
+                                failed = true;
                             }
                         }
                         Err(_) => {
                             results.insert(&command.name, false);
+                            failed = true;
                         }
                     }
                 }
 
+                println!("------------------ Overview ------------------");
                 for (name, result) in results {
                     if result {
                         println!("✓ {}", name)
                     } else {
                         println!("✖ {}", name)
                     }
+                }
+
+                if failed {
+                    return Err(RepoFuncError::Custom {
+                        information: "a command has failed".to_string(),
+                    });
                 }
 
                 Ok(())
