@@ -2,13 +2,17 @@ use super::ai_calls;
 use std::fs;
 use std::process::{Command, Stdio};
 
-fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn get_subtitles(url: &str, show_logs: bool) -> Result<String, Box<dyn std::error::Error>> {
+    let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
+
     println!("Loading Subtitles");
 
     let tempdir = tempfile::tempdir().unwrap();
     let subs_path = tempdir.path().join("subs");
 
-    let status = Command::new("yt-dlp")
+    let mut command = Command::new("yt-dlp");
+
+    command
         .args([
             "--write-auto-subs",
             "--sub-langs",
@@ -19,10 +23,13 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
             "-o",
         ])
         .arg(subs_path.to_str().unwrap())
-        .arg(url)
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()?;
+        .arg(fixed_url);
+
+    if !show_logs {
+        command.stdout(Stdio::null()).stderr(Stdio::null());
+    }
+
+    let status = command.status()?;
 
     if !status.success() {
         return Err("yt-dlp failed".into());
@@ -36,9 +43,7 @@ fn get_subtitles(url: &str) -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn run_summarize_yt(config: &crate::config::Config, url: &str, private_mode: bool) {
-    let fixed_url = url.replace("invidious.jonahmakowski.ca", "youtube.com");
-
-    let get_subs = get_subtitles(&fixed_url);
+    let get_subs = get_subtitles(url, false);
 
     match get_subs {
         Ok(subtitles) => {
@@ -78,4 +83,26 @@ pub fn download_yt(url: &str, target_location: &str) -> Result<(), Box<dyn std::
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[ignore]
+    fn subtitles_check() {
+        let yt_subtitles = get_subtitles("https://www.youtube.com/watch?v=jObOjhUkf50", false)
+            .expect("Failed to download subtitles from youtube");
+        let invidious_subtitles = get_subtitles(
+            "https://invidious.jonahmakowski.ca/watch?v=jObOjhUkf50",
+            false,
+        )
+        .expect("Failed to download subtitles from invidious (but via youtube)");
+
+        let correct_subtitles = include_str!("../../tests-data/subtitles_test.txt");
+
+        assert_eq!(yt_subtitles, correct_subtitles);
+        assert_eq!(invidious_subtitles, correct_subtitles);
+    }
 }
