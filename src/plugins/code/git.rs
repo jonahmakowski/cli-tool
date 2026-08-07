@@ -5,7 +5,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
-fn get_git_diff() -> Result<String, Box<dyn std::error::Error>> {
+pub fn get_git_diff() -> Result<String, Box<dyn std::error::Error>> {
     let result = Command::new("git")
         .args(["--no-pager", "diff", "--staged"])
         .output()?;

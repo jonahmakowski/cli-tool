@@ -63,6 +63,8 @@ struct LintCommandConfig {
     name: String,
     command: Vec<String>,
     post_command: Option<Vec<String>>,
+    #[serde(rename = "if")]
+    condition: Option<String>,
 }
 
 fn load_config() -> Result<RepoConfig, ConfigError> {
@@ -114,6 +116,52 @@ fn execute_command_from_vec(
     cmd.status()
 }
 
+fn check_conditional(conditional: &str) -> Result<bool, RepoFuncError> {
+    let conditional_vec: Vec<&str> = conditional.split(" ").collect();
+
+    match conditional_vec[0] {
+        "changed" => {
+            if conditional_vec.len() == 1 {
+                return Err(RepoFuncError::RequiredArgumentsNotProvided {
+                    args: vec!["preflight_commands.*.if.+1".into()],
+                });
+            }
+
+            let git_diff = match git::get_git_diff() {
+                Ok(val) => val,
+                Err(_) => return Err(RepoFuncError::NoGit),
+            };
+
+            let git_diff_lines = git_diff.split("\n");
+
+            let mut changed_files: Vec<&str> = vec![];
+
+            for line in git_diff_lines {
+                if line.starts_with("diff --git") {
+                    let whitespace_split_line: Vec<&str> = line.split(" ").collect();
+                    changed_files
+                        .push(whitespace_split_line[2].split("a/").collect::<Vec<&str>>()[1]);
+                }
+            }
+
+            for (index, val) in conditional_vec.iter().enumerate() {
+                if index == 0 {
+                    continue;
+                }
+
+                if changed_files.contains(val) {
+                    return Ok(true);
+                }
+            }
+
+            Ok(false)
+        }
+        _ => Err(RepoFuncError::Custom {
+            information: "Invalid conditional arguement".into(),
+        }),
+    }
+}
+
 pub fn run_preflight() -> Result<(), RepoFuncError> {
     let conf = &(*REPO_CONFIG);
 
@@ -133,6 +181,14 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
 
                 for command in commands {
                     println!("------------------ {} ------------------", command.name);
+
+                    if let Some(cond) = &command.condition
+                        && !check_conditional(cond)?
+                    {
+                        println!("Skipped due to conditions");
+                        results.insert(&command.name, true);
+                        continue;
+                    }
 
                     if command.command.is_empty() {
                         return Err(RepoFuncError::RequiredArgumentsNotProvided {

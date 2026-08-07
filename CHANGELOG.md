@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Add test to yt plugin for subtitles
+
 ### Docs
 
 - Update changelog configuration to categorize CI and docs
