@@ -210,8 +210,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 plugins::code::git::git_commit(
                     &config,
                     cli.private,
-                    breaking,
                     skip_preflight,
+                    breaking,
                     &intent,
                 );
             }
