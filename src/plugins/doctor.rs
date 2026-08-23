@@ -8,6 +8,7 @@ static CHECKS: LazyLock<IndexMap<&'static str, CheckFn>> = LazyLock::new(|| {
     IndexMap::from([
         ("Git Executable in PATH", check_git as CheckFn),
         ("YT DLP Executable in PATH", check_yt_dlp as CheckFn),
+        ("rsync Executable in PATH", check_rsync as CheckFn),
         ("Configuration", validate_config as CheckFn),
     ])
 });
@@ -52,6 +53,10 @@ fn check_yt_dlp() -> StatusCheck {
 
 fn check_git() -> StatusCheck {
     check_external_dep("git")
+}
+
+fn check_rsync() -> StatusCheck {
+    check_external_dep("rsync")
 }
 
 fn validate_config() -> StatusCheck {

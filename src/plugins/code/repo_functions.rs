@@ -5,7 +5,7 @@ use indexmap::IndexMap;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::{fs, sync::LazyLock};
+use std::{fs, io, sync::LazyLock};
 use tempfile::{TempDir, tempdir};
 use thiserror::Error;
 
@@ -136,6 +136,21 @@ struct WorktreeGuard {
     worktree: PathBuf,
 }
 
+/// Recursively copy a directory and its contents
+fn copy_dir_all(src: &Path, dst: &Path) -> io::Result<()> {
+    fs::create_dir_all(dst)?;
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let ty = entry.file_type()?;
+        if ty.is_dir() {
+            copy_dir_all(&entry.path(), &dst.join(entry.file_name()))?;
+        } else {
+            fs::copy(entry.path(), dst.join(entry.file_name()))?;
+        }
+    }
+    Ok(())
+}
+
 impl Drop for WorktreeGuard {
     fn drop(&mut self) {
         let _ = execute_git_command(
@@ -168,6 +183,34 @@ fn create_staged_worktree(repository: &Path) -> Result<(TempDir, WorktreeGuard),
                 String::from_utf8_lossy(&add.stderr).trim()
             ),
         });
+    }
+
+    // Copy the target directory to preserve build cache
+    let target_src = repository.join("target");
+    let target_dest = worktree_path.join("target");
+
+    if target_src.exists() {
+        // First try using rsync if available (more efficient for large directories)
+        let rsync_result = Command::new("rsync")
+            .arg("-a") // Archive mode (preserves permissions, timestamps, etc.)
+            .arg("--delete") // Delete extraneous files in destination
+            .arg(format!("{}/", target_src.display()))
+            .arg(format!("{}/", target_dest.display()))
+            .status();
+
+        match rsync_result {
+            Ok(status) if status.success() => {
+                // rsync succeeded, continue
+            }
+            _ => {
+                // Fall back to copying with Rust stdlib
+                if let Err(err) = copy_dir_all(&target_src, &target_dest) {
+                    return Err(RepoFuncError::Custom {
+                        information: format!("failed to copy target directory: {err}"),
+                    });
+                }
+            }
+        }
     }
 
     let staged_diff = git::get_staged_diff_at(repository).map_err(|err| RepoFuncError::Custom {
