@@ -14,6 +14,8 @@ You will receive:
 
 Analyze the diff and identify the most meaningful user-facing, behavioral, architectural, or maintenance changes.
 
+Ignore all changes to CHANGELOG.md when analyzing the diff.
+
 Produce one conventional commit message that accurately summarizes the change set.
 
 # COMMIT MESSAGE RULES
