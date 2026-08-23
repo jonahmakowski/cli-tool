@@ -4,6 +4,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Ignore changelog in AI commit prompt
+
+### Docs
+
+- Add Claude Code repository guidance
+
+## [0.9.0] - 2026-08-07
+
 ### Added
 
 - Add test to yt plugin for subtitles
@@ -12,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Docs
 
 - Update changelog configuration to categorize CI and docs
+
+### Fixed
+
+- Make breaking changes and skip_preflight work
 
 ## [0.8.0] - 2026-08-04
 
@@ -344,7 +358,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.8.0..HEAD
+[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.9.0..HEAD
+[0.9.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.8.0..v0.9.0
 [0.8.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.7.0..v0.8.0
 [0.7.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..v0.7.0
 [0.6.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..v0.6.6

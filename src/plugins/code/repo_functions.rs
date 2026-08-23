@@ -2,9 +2,10 @@ use super::git;
 use anyhow::Result;
 use indexmap::IndexMap;
 use serde::Deserialize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{fs, sync::LazyLock};
+use tempfile::{TempDir, tempdir};
 use thiserror::Error;
 
 const CONFIG_FILE: &str = "tool.yaml";
@@ -101,7 +102,7 @@ fn load_config() -> Result<RepoConfig, ConfigError> {
 
 fn execute_command_from_vec(
     command: &[String],
-    execution_location: &PathBuf,
+    execution_location: &Path,
 ) -> Result<std::process::ExitStatus, std::io::Error> {
     let mut cmd = Command::new(&command[0]);
 
@@ -116,7 +117,104 @@ fn execute_command_from_vec(
     cmd.status()
 }
 
-fn check_conditional(conditional: &str) -> Result<bool, RepoFuncError> {
+fn execute_git_command(
+    repository: &Path,
+    args: &[&str],
+) -> Result<std::process::Output, RepoFuncError> {
+    Command::new("git")
+        .current_dir(repository)
+        .args(args)
+        .output()
+        .map_err(|err| RepoFuncError::Custom {
+            information: format!("failed to run git: {err}"),
+        })
+}
+
+struct WorktreeGuard {
+    repository: PathBuf,
+    worktree: PathBuf,
+}
+
+impl Drop for WorktreeGuard {
+    fn drop(&mut self) {
+        let _ = execute_git_command(
+            &self.repository,
+            &[
+                "worktree",
+                "remove",
+                "--force",
+                &self.worktree.to_string_lossy(),
+            ],
+        );
+    }
+}
+
+fn create_staged_worktree(repository: &Path) -> Result<(TempDir, WorktreeGuard), RepoFuncError> {
+    let worktree = tempdir().map_err(|err| RepoFuncError::Custom {
+        information: format!("failed to create temporary directory: {err}"),
+    })?;
+
+    let worktree_path = worktree.path().to_path_buf();
+    let worktree_path_string = worktree_path.to_string_lossy().into_owned();
+    let add = execute_git_command(
+        repository,
+        &["worktree", "add", "--detach", &worktree_path_string, "HEAD"],
+    )?;
+    if !add.status.success() {
+        return Err(RepoFuncError::Custom {
+            information: format!(
+                "failed to create temporary worktree: {}",
+                String::from_utf8_lossy(&add.stderr).trim()
+            ),
+        });
+    }
+
+    let staged_diff = git::get_staged_diff_at(repository).map_err(|err| RepoFuncError::Custom {
+        information: format!("failed to read staged diff: {err}"),
+    })?;
+
+    if !staged_diff.is_empty() {
+        let apply = Command::new("git")
+            .current_dir(&worktree_path)
+            .args(["apply", "--index"])
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .and_then(|mut child| {
+                use std::io::Write;
+
+                child
+                    .stdin
+                    .take()
+                    .expect("git apply stdin should be piped")
+                    .write_all(&staged_diff)?;
+                child.wait_with_output()
+            })
+            .map_err(|err| RepoFuncError::Custom {
+                information: format!("failed to apply staged diff: {err}"),
+            })?;
+
+        if !apply.status.success() {
+            return Err(RepoFuncError::Custom {
+                information: format!(
+                    "failed to apply staged diff: {}",
+                    String::from_utf8_lossy(&apply.stderr).trim()
+                ),
+            });
+        }
+    }
+
+    Ok((
+        worktree,
+        WorktreeGuard {
+            repository: repository.to_path_buf(),
+            worktree: worktree_path,
+        },
+    ))
+}
+
+fn check_conditional(conditional: &str, repository: &Path) -> Result<bool, RepoFuncError> {
     let conditional_vec: Vec<&str> = conditional.split(" ").collect();
 
     match conditional_vec[0] {
@@ -127,8 +225,10 @@ fn check_conditional(conditional: &str) -> Result<bool, RepoFuncError> {
                 });
             }
 
-            let git_diff = match git::get_git_diff() {
-                Ok(val) => val,
+            let git_diff = match git::get_staged_diff_at(repository) {
+                Ok(val) => String::from_utf8(val).map_err(|_| RepoFuncError::Custom {
+                    information: "staged diff is not valid UTF-8".into(),
+                })?,
                 Err(_) => return Err(RepoFuncError::NoGit),
             };
 
@@ -168,7 +268,7 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
     match conf {
         Ok(conf) => match &conf.preflight_commands {
             Some(commands) => {
-                let git_repo_path = git::git_repo_root().unwrap();
+                let git_repo_path = git::git_repo_root().map_err(|_| RepoFuncError::NoGit)?;
 
                 if commands.is_empty() {
                     return Err(RepoFuncError::RequiredArgumentsNotProvided {
@@ -176,6 +276,8 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                     });
                 }
 
+                let (staged_worktree, _worktree_guard) = create_staged_worktree(&git_repo_path)?;
+                let execution_location = staged_worktree.path();
                 let mut results = IndexMap::new();
                 let mut failed = false;
 
@@ -183,7 +285,7 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                     println!("------------------ {} ------------------", command.name);
 
                     if let Some(cond) = &command.condition
-                        && !check_conditional(cond)?
+                        && !check_conditional(cond, &git_repo_path)?
                     {
                         println!("Skipped due to conditions");
                         results.insert(&command.name, true);
@@ -196,13 +298,13 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                         });
                     }
 
-                    let out = execute_command_from_vec(&command.command, &git_repo_path);
+                    let out = execute_command_from_vec(&command.command, execution_location);
 
                     match out {
                         Ok(status) => {
                             if status.success() {
                                 if let Some(cmd) = &command.post_command {
-                                    let out = execute_command_from_vec(cmd, &git_repo_path);
+                                    let out = execute_command_from_vec(cmd, execution_location);
                                     match out {
                                         Ok(status) => {
                                             if status.success() {

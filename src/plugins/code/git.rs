@@ -24,6 +24,26 @@ pub fn get_git_diff() -> Result<String, Box<dyn std::error::Error>> {
     Ok(diff)
 }
 
+pub fn get_staged_diff_at(
+    repository: &std::path::Path,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let result = Command::new("git")
+        .current_dir(repository)
+        .args(["--no-pager", "diff", "--staged", "--binary", "--full-index"])
+        .output()?;
+
+    if !result.status.success() {
+        return Err(format!(
+            "git diff failed (exit code {}): {}",
+            result.status,
+            String::from_utf8_lossy(&result.stderr)
+        )
+        .into());
+    }
+
+    Ok(result.stdout)
+}
+
 fn write_commit_message(
     config: &crate::config::Config,
     private_mode: bool,

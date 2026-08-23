@@ -222,7 +222,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::Doctor => {}
         Command::Config { target } => match target {
             ConfigTarget::Path => println!("{}", config::default_path()?.to_string_lossy()),
-            ConfigTarget::Show => println!("{:#?}", &config),
+            ConfigTarget::Show => println!("{:#?}", config),
         },
     }
 
