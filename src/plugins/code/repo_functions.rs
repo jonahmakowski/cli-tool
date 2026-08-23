@@ -1,5 +1,6 @@
 use super::git;
 use anyhow::Result;
+use glob::Pattern;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
@@ -244,20 +245,32 @@ fn check_conditional(conditional: &str, repository: &Path) -> Result<bool, RepoF
                 }
             }
 
-            for (index, val) in conditional_vec.iter().enumerate() {
+            for (index, pattern) in conditional_vec.iter().enumerate() {
                 if index == 0 {
                     continue;
                 }
 
-                if changed_files.contains(val) {
+                // Check for exact matches first
+                if changed_files.contains(pattern) {
                     return Ok(true);
+                }
+
+                // Check for wildcard patterns
+                let glob_pattern = Pattern::new(pattern).map_err(|e| RepoFuncError::Custom {
+                    information: format!("Invalid glob pattern '{}': {}", pattern, e),
+                })?;
+
+                for file in &changed_files {
+                    if glob_pattern.matches(file) {
+                        return Ok(true);
+                    }
                 }
             }
 
             Ok(false)
         }
         _ => Err(RepoFuncError::Custom {
-            information: "Invalid conditional arguement".into(),
+            information: "Invalid conditional argument".into(),
         }),
     }
 }
@@ -359,5 +372,73 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
             ConfigError::NoGit { .. } => Err(RepoFuncError::NoGit),
             _ => Err(RepoFuncError::ConfigError { source: err }),
         },
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use glob::Pattern;
+
+    #[test]
+    fn test_glob_pattern_matching() {
+        // Test basic wildcard matching
+        let pattern = Pattern::new("src/*").unwrap();
+        assert!(pattern.matches("src/file1.rs"));
+        assert!(pattern.matches("src/file2.js"));
+        assert!(!pattern.matches("tests/file1.rs"));
+
+        // Test extension matching
+        let pattern = Pattern::new("src/*.rs").unwrap();
+        assert!(pattern.matches("src/file1.rs"));
+        assert!(!pattern.matches("src/file2.js"));
+
+        // Test nested directory matching
+        let pattern = Pattern::new("*/file1.rs").unwrap();
+        assert!(pattern.matches("src/file1.rs"));
+        assert!(pattern.matches("tests/file1.rs"));
+    }
+
+    #[test]
+    fn test_wildcard_check_conditional_logic() {
+        // Test the logic of our wildcard matching without depending on git
+        let changed_files = vec!["src/file1.rs", "src/file2.rs", "tests/test_file.rs"];
+
+        // Test exact match
+        assert!(changed_files.contains(&"src/file1.rs"));
+
+        // Test wildcard patterns
+        let src_pattern = Pattern::new("src/*").unwrap();
+        let rs_pattern = Pattern::new("src/*.rs").unwrap();
+        let any_file1_pattern = Pattern::new("*file1.rs").unwrap();
+
+        let mut src_match = false;
+        let mut rs_match = false;
+        let mut any_file1_match = false;
+
+        for file in &changed_files {
+            if src_pattern.matches(file) {
+                src_match = true;
+            }
+            if rs_pattern.matches(file) {
+                rs_match = true;
+            }
+            if any_file1_pattern.matches(file) {
+                any_file1_match = true;
+            }
+        }
+
+        assert!(src_match);
+        assert!(rs_match);
+        assert!(any_file1_match);
+
+        // Test non-matching pattern
+        let docs_pattern = Pattern::new("docs/*").unwrap();
+        let mut docs_match = false;
+        for file in &changed_files {
+            if docs_pattern.matches(file) {
+                docs_match = true;
+            }
+        }
+        assert!(!docs_match);
     }
 }
