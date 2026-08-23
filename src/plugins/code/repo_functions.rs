@@ -199,11 +199,12 @@ fn create_staged_worktree(repository: &Path) -> Result<(TempDir, WorktreeGuard),
             .status();
 
         match rsync_result {
-            Ok(status) if status.success() => {
-                // rsync succeeded, continue
-            }
+            Ok(status) if status.success() => (),
             _ => {
                 // Fall back to copying with Rust stdlib
+                println!(
+                    "It looks like you don't have rsync installed! Falling back to rust based copying for the target folder."
+                );
                 if let Err(err) = copy_dir_all(&target_src, &target_dest) {
                     return Err(RepoFuncError::Custom {
                         information: format!("failed to copy target directory: {err}"),
