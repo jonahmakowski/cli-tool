@@ -54,9 +54,9 @@ pub fn default_path() -> Result<PathBuf, ConfigError> {
     }
 }
 
-pub fn load_config(path: Option<PathBuf>) -> Result<Config, ConfigError> {
+pub fn load_config(path: Option<&str>) -> Result<Config, ConfigError> {
     let config_path = match path {
-        Some(p) => p,
+        Some(p) => PathBuf::from(p),
         None => default_path()?,
     };
 
@@ -111,7 +111,10 @@ mod tests {
         let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
         assert_eq!(
-            load_config(Some(config_path)).unwrap(),
+            load_config(Some(
+                config_path.to_str().expect("failed to convert to string")
+            ))
+            .unwrap(),
             Config {
                 ai: AiConfig {
                     private: AiConfigChild {
@@ -151,7 +154,10 @@ mod tests {
         let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
         assert_eq!(
-            load_config(Some(config_path)).unwrap(),
+            load_config(Some(
+                config_path.to_str().expect("failed to convert to string")
+            ))
+            .unwrap(),
             Config {
                 ai: AiConfig {
                     private: AiConfigChild {
@@ -188,7 +194,9 @@ mod tests {
 
         let config_path = create_mock_config_file(temp_dir.path(), config_valid);
 
-        match load_config(Some(config_path)) {
+        match load_config(Some(
+            config_path.to_str().expect("failed to convert to string"),
+        )) {
             Ok(_) => panic!(),
             Err(err) => {
                 if let ConfigError::Parse { .. } = err {

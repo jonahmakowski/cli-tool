@@ -23,6 +23,10 @@ struct Cli {
     /// Temporarily override the configured AI model for this invocation
     #[arg(long, global = true)]
     model: Option<String>,
+
+    /// Temporarily override the default config path
+    #[arg(long, global = true)]
+    config: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -149,7 +153,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
-    let config = config::load_config(None)?;
+    let config = config::load_config(cli.config.as_deref())?;
 
     match cli.command {
         Command::Summarize { target } => match target {
