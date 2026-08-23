@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Ignore changelog in AI commit prompt
+- Run preflight commands in a seperated worktree
 
 ### Docs
 

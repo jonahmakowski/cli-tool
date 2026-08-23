@@ -18,6 +18,7 @@ pub fn base_call(
     user_message: &str,
     config: &config::Config,
     private_mode: bool,
+    model_override: Option<&str>,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let ai_config = {
         if private_mode {
@@ -31,7 +32,7 @@ pub fn base_call(
         .post(format!("{}/chat/completions", ai_config.base_url))
         .bearer_auth(&ai_config.api_key)
         .json(&json!({
-            "model": ai_config.model,
+            "model": model_override.unwrap_or(&ai_config.model),
             "messages": [
                 {
                     "role": "system",
@@ -59,6 +60,7 @@ pub fn use_pattern(
     user_message: &str,
     config: &config::Config,
     private_mode: bool,
+    model_override: Option<&str>,
 ) -> Result<String, Box<dyn std::error::Error>> {
     if !PATTERNS.contains_key(pattern) {
         return Err("Patern doesn't exist".into());
@@ -66,7 +68,13 @@ pub fn use_pattern(
 
     let system_prompt = PATTERNS[pattern];
 
-    base_call(system_prompt, user_message, config, private_mode)
+    base_call(
+        system_prompt,
+        user_message,
+        config,
+        private_mode,
+        model_override,
+    )
 }
 
 #[cfg(test)]
@@ -146,7 +154,13 @@ mod tests {
 
     #[test]
     fn rejects_unknown_pattern_without_an_http_request() {
-        let result = use_pattern("missing", "message", &config("http://127.0.0.1:1"), false);
+        let result = use_pattern(
+            "missing",
+            "message",
+            &config("http://127.0.0.1:1"),
+            false,
+            None,
+        );
 
         assert_eq!(result.unwrap_err().to_string(), "Patern doesn't exist");
     }
@@ -161,7 +175,8 @@ mod tests {
     fn base_call_uses_public_credentials_and_serializes_messages() {
         let (base_url, server) =
             mock_server(r#"{"choices":[{"message":{"content":"public answer"}}]}"#);
-        let result = base_call("system text", "user text", &config(&base_url), false).unwrap();
+        let result =
+            base_call("system text", "user text", &config(&base_url), false, None).unwrap();
         let request = server.join().unwrap();
 
         assert_eq!(result, "public answer");
@@ -173,10 +188,29 @@ mod tests {
     }
 
     #[test]
+    fn base_call_uses_model_override_without_changing_config() {
+        let (base_url, server) =
+            mock_server(r#"{"choices":[{"message":{"content":"override answer"}}]}"#);
+        let result = base_call(
+            "system",
+            "user",
+            &config(&base_url),
+            false,
+            Some("temporary-model"),
+        )
+        .unwrap();
+        let request = server.join().unwrap();
+
+        assert_eq!(result, "override answer");
+        assert!(request.contains("\"model\":\"temporary-model\""));
+        assert!(!request.contains("\"model\":\"public-model\""));
+    }
+
+    #[test]
     fn base_call_uses_private_credentials_when_requested() {
         let (base_url, server) =
             mock_server(r#"{"choices":[{"message":{"content":"private answer"}}]}"#);
-        let result = base_call("system", "user", &config(&base_url), true).unwrap();
+        let result = base_call("system", "user", &config(&base_url), true, None).unwrap();
         let request = server.join().unwrap();
 
         assert_eq!(result, "private answer");
@@ -188,7 +222,7 @@ mod tests {
     fn base_call_rejects_responses_without_content() {
         let (base_url, server) = mock_server(r#"{"choices":[]}"#);
 
-        let result = base_call("system", "user", &config(&base_url), false);
+        let result = base_call("system", "user", &config(&base_url), false, None);
         server.join().unwrap();
 
         assert_eq!(result.unwrap_err().to_string(), "No response content");

@@ -19,6 +19,10 @@ struct Cli {
         help = "Use the private AI configuration in relevant workflows"
     )]
     private: bool,
+
+    /// Temporarily override the configured AI model for this invocation
+    #[arg(long, global = true)]
+    model: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -150,7 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match cli.command {
         Command::Summarize { target } => match target {
             SummarizeTarget::Yt { url } => {
-                plugins::yt::run_summarize_yt(&config, &url, cli.private);
+                plugins::yt::run_summarize_yt(&config, &url, cli.private, cli.model.as_deref());
             }
         },
         Command::Net { target } => match target {
@@ -213,6 +217,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     skip_preflight,
                     breaking,
                     &intent,
+                    cli.model.as_deref(),
                 );
             }
             CodeTarget::RunPreflight => {

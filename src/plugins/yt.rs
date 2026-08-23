@@ -42,12 +42,23 @@ fn get_subtitles(url: &str, show_logs: bool) -> Result<String, Box<dyn std::erro
     Ok(result)
 }
 
-pub fn run_summarize_yt(config: &crate::config::Config, url: &str, private_mode: bool) {
+pub fn run_summarize_yt(
+    config: &crate::config::Config,
+    url: &str,
+    private_mode: bool,
+    model_override: Option<&str>,
+) {
     let get_subs = get_subtitles(url, false);
 
     match get_subs {
         Ok(subtitles) => {
-            match ai_calls::use_pattern("yt-summary", &subtitles, config, private_mode) {
+            match ai_calls::use_pattern(
+                "yt-summary",
+                &subtitles,
+                config,
+                private_mode,
+                model_override,
+            ) {
                 Ok(result) => {
                     println!("Summary:");
                     println!("{result}");

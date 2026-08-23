@@ -42,6 +42,10 @@ struct DailyWeather {
     temperature_2m_mean: Vec<f64>,
 }
 
+fn parse_public_ip(body: &str) -> Result<IpAddr, std::net::AddrParseError> {
+    body.trim().parse()
+}
+
 pub fn get_public_ip(ip_type: &IpType) -> Result<String, Box<dyn std::error::Error>> {
     let mut client_builder = Client::builder();
 
@@ -56,13 +60,16 @@ pub fn get_public_ip(ip_type: &IpType) -> Result<String, Box<dyn std::error::Err
 
     let client = client_builder.build()?;
 
-    let ip = client
+    let response = client
         .get("https://ifconfig.me")
         .header(header::USER_AGENT, "curl/8.7.1")
-        .send()?
-        .text()?;
+        .send()?;
 
-    Ok(ip)
+    if !response.status().is_success() {
+        return Err(format!("ifconfig.me returned {}", response.status()).into());
+    }
+
+    Ok(parse_public_ip(&response.text()?).map(|ip| ip.to_string())?)
 }
 
 fn get_ip_info() -> Result<IpInfo, Box<dyn std::error::Error>> {
@@ -146,14 +153,20 @@ pub fn fetch_as_markdown(url: &str) -> Result<String, Box<dyn std::error::Error>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::net::{Ipv4Addr, Ipv6Addr};
+    #[test]
+    fn parses_public_ip_response() {
+        assert_eq!(
+            parse_public_ip(" 203.0.113.42\n").unwrap(),
+            "203.0.113.42".parse::<IpAddr>().unwrap()
+        );
+        assert_eq!(
+            parse_public_ip("2001:db8::42\n").unwrap(),
+            "2001:db8::42".parse::<IpAddr>().unwrap()
+        );
+    }
 
     #[test]
-    fn get_public_ip_valid() {
-        let ipv4 = get_public_ip(&IpType::V4).unwrap();
-        assert!(ipv4.parse::<Ipv4Addr>().is_ok());
-
-        let ipv6 = get_public_ip(&IpType::V6).unwrap();
-        assert!(ipv6.parse::<Ipv6Addr>().is_ok());
+    fn rejects_invalid_public_ip_response() {
+        assert!(parse_public_ip("not an ip address").is_err());
     }
 }

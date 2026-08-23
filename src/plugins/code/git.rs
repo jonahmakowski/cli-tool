@@ -47,6 +47,7 @@ pub fn get_staged_diff_at(
 fn write_commit_message(
     config: &crate::config::Config,
     private_mode: bool,
+    model_override: Option<&str>,
     breaking: bool,
     intent: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
@@ -66,6 +67,7 @@ fn write_commit_message(
         &constructed_message,
         config,
         private_mode,
+        model_override,
     )?;
 
     Ok(ai_response)
@@ -77,12 +79,13 @@ pub fn git_commit(
     skip_preflight: bool,
     breaking: bool,
     intent: &str,
+    model_override: Option<&str>,
 ) {
     if !skip_preflight && *super::repo_functions::REPO_CONFIG_EXISTS {
         super::repo_functions::run_preflight().expect("Preflight failed");
     }
 
-    match write_commit_message(config, private_mode, breaking, intent) {
+    match write_commit_message(config, private_mode, model_override, breaking, intent) {
         Ok(response) => {
             let dirs = ProjectDirs::from("com", "jonahmakowski", "cli-tool").unwrap();
             let cache_dir = dirs.cache_dir();
