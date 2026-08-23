@@ -14,3 +14,4 @@ preflight_commands:
   - name: Update Changelog
     command: ["git-cliff", "--output", "CHANGELOG.md"]
     post_command: ["git", "add", "CHANGELOG.md"]
+    environment: "standard"

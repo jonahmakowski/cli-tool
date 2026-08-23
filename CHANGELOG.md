@@ -1,348 +1,418 @@
 # Changelog
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Unreleased
 
-### Changed
+### Features
 
-- Ignore changelog in AI commit prompt
-- Run preflight commands in a seperated worktree
+- feat: accept string path for config override
+- feat: support glob patterns in conditional repository checks
+- feat: preserve build cache when creating staged worktree
+- feat: add fallback message when rsync is unavailable
 
-### Docs
+### Miscellaneous Tasks
 
-- Add Claude Code repository guidance
+- chore: bump version to match tags (oops!)
+- chore(docs): simplify git-cliff configuration
 
-## [0.9.0] - 2026-08-07
+## 0.10.0 - 2026-08-23
 
-### Added
+### Documentation
 
-- Add test to yt plugin for subtitles
-- Add conditional preflight support and subtitle test
+- docs: add Claude Code repository guidance
 
-### Docs
+### Features
 
-- Update changelog configuration to categorize CI and docs
+- feat!: run preflight commands in a seperated worktree
+- feat!: add model override option for AI calls
 
-### Fixed
+### Miscellaneous Tasks
 
-- Make breaking changes and skip_preflight work
+- chore: ignore changelog in AI commit prompt
 
-## [0.8.0] - 2026-08-04
+### Other (unconventional)
 
-### Added
+- ci: add Codeberg release publishing to workflow
 
-- Add fetch command for webpage retrieval with markdown conversion
-- Add linting system
-- Add preflight checks and remove git hooks
-- Add post-command support for preflight checks
-- Add cargo test command
+## 0.9.0 - 2026-08-07
 
-### Changed
+### Bug Fixes
 
-- Bump version
+- fix: make breaking changes and skip_preflight work
 
-## [0.7.0] - 2026-08-03
+### Documentation
 
-### Added
+- docs: update changelog configuration to categorize CI and docs
 
-- Add validation for empty git diff before generating commit message
-- Add unit tests for get_public_ip
-- Add invalid config parsing test
+### Features
 
-### Changed
+- feat!: add conditional preflight support and subtitle test
 
-- Bump version
+### Testing
 
-### Removed
+- tests: add test to yt plugin for subtitles
 
-- Remove error handling in trust functions and tests
+## 0.8.0 - 2026-08-04
 
-## [0.6.6] - 2026-08-03
+### Features
 
-### Changed
+- feat: add fetch command for webpage retrieval with markdown conversion
+- feat: add linting system
+- feat!: add preflight checks and remove git hooks
+- feat: add post-command support for preflight checks
+- feat(preflight): add cargo test command
 
-- Bump version
+### Miscellaneous Tasks
 
-## [0.6.5-beta6] - 2026-08-03
+- chore: bump version
 
-### Changed
+## 0.7.0 - 2026-08-03
 
-- Install Github CLI in release workflow
-- Bump version
+### Features
 
-## [0.6.5-beta5] - 2026-08-03
+- feat: add validation for empty git diff before generating commit message
 
-### CI
+### Miscellaneous Tasks
 
-- Skip release asset uploads
+- chore: bump version
 
-### Changed
+### Refactor
 
-- Bump version
+- refactor: remove error handling in trust functions and tests
 
-## [0.6.5-beta4] - 2026-08-03
+### Testing
 
-### CI
+- test: add unit tests for get_public_ip
+- test: add invalid config parsing test
 
-- Hopefully fixed ci
+## 0.6.6 - 2026-08-03
 
-### Changed
+### Miscellaneous Tasks
 
-- Bumped version
+- chore: bump version
 
-## [0.6.5-beta3] - 2026-08-03
+## 0.6.5-beta6 - 2026-08-03
 
-### CI
+### Miscellaneous Tasks
 
-- Fixing release system (hopfully)
+- chore: install Github CLI in release workflow
+- chore: bump version
 
-## [0.6.5-beta2] - 2026-08-03
+## 0.6.5-beta5 - 2026-08-03
 
-### Changed
+### Bug Fixes
 
-- Bump cli-tool version to 0.6.5-beta2 and adjust release workflow
+- fix(ci): skip release asset uploads
 
-## [0.6.5-beta1] - 2026-08-03
+### Miscellaneous Tasks
 
-### Changed
+- chore: bump version
 
-- Replace ConfigPath with Config command having Path and Show subcommands
-- Ensure release directory exists
+## 0.6.5-beta4 - 2026-08-03
+
+### Bug Fixes
+
+- fix(ci): hopefully fixed ci
+
+### Miscellaneous Tasks
+
+- chore: bumped version
+
+## 0.6.5-beta3 - 2026-08-03
+
+### Bug Fixes
+
+- fix(ci): fixing release system (hopfully)
+
+## 0.6.5-beta2 - 2026-08-03
+
+### Miscellaneous Tasks
+
+- chore: bump cli-tool version to 0.6.5-beta2 and adjust release workflow
+
+## 0.6.5-beta1 - 2026-08-03
+
+### Features
+
+- feat: replace ConfigPath with Config command having Path and Show subcommands
+
+### Miscellaneous Tasks
+
+- chore: ensure release directory exists
+
+### Other (unconventional)
+
 - Bump version to beta
 
-### Fixed
+### Testing
 
-- Verify doctor command succeeds
+- test: verify doctor command succeeds
 
-## [0.6.4] - 2026-08-03
+## 0.6.4 - 2026-08-03
 
-### CI
+### Bug Fixes
 
-- Release system
+- fix(ci): release system
 
-### Changed
+### Other (unconventional)
 
 - Revert "fix(ci): Hopefully this works now"
 
-## [0.6.3] - 2026-08-03
+## 0.6.3 - 2026-08-03
 
-### CI
+### Bug Fixes
 
-- Hopefully this works now
+- fix(ci): Hopefully this works now
 
-### Changed
+### Miscellaneous Tasks
 
-- Bump version
+- chore: bump version
 
-## [0.6.2] - 2026-08-03
+## 0.6.2 - 2026-08-03
 
-### CI
+### Bug Fixes
 
-- Forgot to comment out a line
+- fix(ci): forgot to comment out a line
 
-### Changed
+### Miscellaneous Tasks
 
-- Bump version
+- chore: bump version
 
-## [0.6.1] - 2026-08-03
+## 0.6.1 - 2026-08-03
 
-### CI
+### Miscellaneous Tasks
 
-- Made releases work
+- chore: bump version
 
-### Changed
+### Other (unconventional)
 
-- Bump version
+- ci: made releases work
 
-## [0.6.0] - 2026-08-03
+## 0.6.0 - 2026-08-03
 
-### Added
+### Bug Fixes
 
-- Add doctor command for system health checks
-- Add optional config path parameter to load_config
-- Add config tests and config_path command
+- fix: make tv config optional and handle missing configuration gracefully
 
-### Changed
+### Features
 
-- Moved config into lazylock
-- Replace string formatting with formatdoc for yaml config
-- Bump version number
+- feat!: add doctor command for system health checks
+- feat: add optional config path parameter to load_config
 
-### Fixed
+### Miscellaneous Tasks
 
-- Make tv config optional and handle missing configuration gracefully
+- chore: bump version number
 
-## [0.5.2] - 2026-08-02
+### Refactor
 
-### CI
+- refactor: moved config into lazylock
+- refactor: replace string formatting with formatdoc for yaml config
 
-- Disable release building until further notice
+### Testing
 
-### Changed
+- test: add config tests and config_path command
 
-- Make the workflow valid
-- Simplify config structs with public fields and simplify dependencies
-- Bump version to 0.5.2
+## 0.5.2 - 2026-08-02
 
-### Docs
+### Documentation
 
-- Convert comments to doc comments for CLI help visibility
+- docs: convert comments to doc comments for CLI help visibility
 
-## [0.5.1] - 2026-08-02
+### Miscellaneous Tasks
 
-### Changed
+- chore: bump version to 0.5.2
 
-- Bump version to 0.5.1
+### Other (unconventional)
 
-## [0.5.0] - 2026-08-02
+- ci: disable release building until further notice
 
-### Added
+### Refactor
 
-- Add AI-powered git commit command and clean up debug output
+- refactor: make the workflow valid
+- refactor: simplify config structs with public fields and simplify dependencies
 
-### Changed
+## 0.5.1 - 2026-08-02
 
-- Made pre-commit run rustfmt instead of just checking
-- Restructure config loading with match expressions
-- Open generated commit message in git editor automatically
+### Miscellaneous Tasks
 
-### Fixed
+- chore: bump version to 0.5.1
 
-- Add AI generated tests to ai_calls.rs and tv.rs
+## 0.5.0 - 2026-08-02
 
-## [0.4.0] - 2026-08-02
+### Features
 
-### Added
+- feat: Made pre-commit run rustfmt instead of just checking
+- feat: add AI-powered git commit command and clean up debug output
+- feat: open generated commit message in git editor automatically
 
-- Chore: add git hooks
+### Refactor
 
-### Changed
+- refactor: restructure config loading with match expressions
 
-- Can load TVDB keys
-- Add TVBD search function
-- Reorganize tvbd search to be under the search subcommand
-- Run rustfmt
-- Seperate search into two functions, making it easier to reuse.
-- Bump version
-- Hopefully fix changelog generation
+### Testing
 
-### Removed
+- test: Add AI generated tests to ai_calls.rs and tv.rs
 
-- Removed unnessary code
+## 0.4.0 - 2026-08-02
 
-## [0.3.0] - 2026-07-19
+### Documentation
 
-### Changed
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
 
-- Run rustfmt
-- Switch to yaml based config
-- Bump version numbers
+### Features
 
-## [0.2.0] - 2026-07-19
+- feat: Can load TVDB keys
+- feat: Add TVBD search function
+- feat: reorganize tvbd search to be under the search subcommand
+- feat: hopefully fix changelog generation
 
-### CI
+### Miscellaneous Tasks
 
-- Added caching for changlog construction
-- Add git-cliff to PATH when restoring from cache
-- Adding git-cliff to the path and installation conditions
-- Remove caching that isn't working
+- chore: add git hooks
+- chore: bump version
 
-### Changed
+### Refactor
 
-- Get ip address tool
-- Feat: Youtube downloader to mp4
+- refactor: removed unnessary code
+- refactor: seperate search into two functions, making it easier to reuse.
 
-### Fixed
+### Styling
 
-- Cliff.toml to ignore automated changelog commits
+- style: run rustfmt
 
-## [0.1.1] - 2026-07-18
+## 0.3.0 - 2026-07-19
 
-### CI
+### Features
 
-- Add release publishing to github
-- Install github cli before using it
+- feat!: switch to yaml based config
 
-### Fixed
+### Miscellaneous Tasks
 
-- Made updating the changelog a "docs" type commit
+- chore: bump version numbers
 
-## [0.1.0] - 2026-07-18
+### Refactor
 
-### Changed
+- refactor: run rustfmt
 
-- Remove unnessary information from cliff.toml
-- Weather command
+## 0.2.0 - 2026-07-19
+
+### Bug Fixes
+
+- fix: cliff.toml to ignore automated changelog commits
+- fix(ci): Add git-cliff to PATH when restoring from cache
+- fix(ci): Adding git-cliff to the path and installation conditions
+- fix(ci): Remove caching that isn't working
+
+### Documentation
+
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+
+### Features
+
+- feat: get ip address tool
+- feat: Youtube downloader to mp4
+
+### Other (unconventional)
+
+- ci: added caching for changlog construction
+
+## 0.1.1 - 2026-07-18
+
+### Bug Fixes
+
+- fix: Made updating the changelog a "docs" type commit
+- fix(ci): Install github cli before using it
+
+### Documentation
+
+- docs(changelog): Update changelog
+- docs(changelog): Update changelog
+
+### Features
+
+- feat(ci): Add release publishing to github
+
+## 0.1.0 - 2026-07-18
+
+### Features
+
+- feat: Weather command
+
+### Miscellaneous Tasks
+
+- chore: Remove unnessary information from cliff.toml
+
+### Other (unconventional)
+
 - Update changelog
 
-## [0.0.6] - 2026-07-18
+## 0.0.6 - 2026-07-18
 
-### CI
+### Bug Fixes
 
-- Release to use github link for install-action
+- fix(ci): Release to use github link for install-action
 
-### Changed
+### Other (unconventional)
 
 - Update changelog
 
-## [0.0.5] - 2026-07-17
+## 0.0.5 - 2026-07-17
 
-### Added
+### Bug Fixes
 
-- Add .forgejo/workflows/changelog.yaml
+- fix(workflows): Use github url for git cliff installation
 
-### CI
-
-- Add manual trigger for changelog update
-
-### Changed
+### Other (unconventional)
 
 - Update .forgejo/workflows/release.yaml
+- Add .forgejo/workflows/changelog.yaml
 - Update changelog
 - Merge branch 'main' of https://git.jonahmakowski.ca/jonahmakowski/cli-tool
 - Update changelog
+- ci: Add manual trigger for changelog update
 - Update changelog
 
-### Fixed
+## 0.0.4 - 2026-07-17
 
-- Use github url for git cliff installation
+### Features
 
-## [0.0.4] - 2026-07-17
+- feat: add cliff.toml file
 
-### Added
-
-- Add cliff.toml file
-
-### Changed
+### Other (unconventional)
 
 - Update .forgejo/workflows/release.yaml
 
-## [0.0.3] - 2026-07-17
+## 0.0.3 - 2026-07-17
 
-### Changed
+### Other (unconventional)
 
 - Update .forgejo/workflows/release.yaml
 - Implemented a "private mode"
 
-## [0.0.2] - 2026-07-17
+## 0.0.2 - 2026-07-17
 
-### Changed
+### Other (unconventional)
 
 - Update .forgejo/workflows/release.yaml
 - Update .forgejo/workflows/release.yaml
 
-## [0.0.1] - 2026-07-17
+## 0.0.1 - 2026-07-17
 
-### Added
-
-- Added workflows and renovate
-
-### Changed
+### Other (unconventional)
 
 - Initial commit
 - Basic yt summary
 - Made it into a simple cli tool
+- Added workflows and renovate
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
@@ -358,36 +428,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
 - Update .forgejo/workflows/build.yaml
-
-[unreleased]: https://github.com/jonahmakowski/cli-tool/compare/v0.9.0..HEAD
-[0.9.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.8.0..v0.9.0
-[0.8.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.7.0..v0.8.0
-[0.7.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.6..v0.7.0
-[0.6.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta6..v0.6.6
-[0.6.5-beta6]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta5..v0.6.5-beta6
-[0.6.5-beta5]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta4..v0.6.5-beta5
-[0.6.5-beta4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta3..v0.6.5-beta4
-[0.6.5-beta3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta2..v0.6.5-beta3
-[0.6.5-beta2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.5-beta1..v0.6.5-beta2
-[0.6.5-beta1]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.4..v0.6.5-beta1
-[0.6.4]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.3..v0.6.4
-[0.6.3]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.2..v0.6.3
-[0.6.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.1..v0.6.2
-[0.6.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.6.0..v0.6.1
-[0.6.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.2..v0.6.0
-[0.5.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.1..v0.5.2
-[0.5.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.5.0..v0.5.1
-[0.5.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.4.0..v0.5.0
-[0.4.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.3.0..v0.4.0
-[0.3.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.2.0..v0.3.0
-[0.2.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.1.1..v0.2.0
-[0.1.1]: https://github.com/jonahmakowski/cli-tool/compare/v0.1.0..v0.1.1
-[0.1.0]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.6..v0.1.0
-[0.0.6]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.5..v0.0.6
-[0.0.5]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.4..v0.0.5
-[0.0.4]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.3..v0.0.4
-[0.0.3]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.2..v0.0.3
-[0.0.2]: https://github.com/jonahmakowski/cli-tool/compare/v0.0.1..v0.0.2
-[0.0.1]: https://github.com/jonahmakowski/cli-tool/tree/v0.0.1
 
 <!-- generated by git-cliff -->

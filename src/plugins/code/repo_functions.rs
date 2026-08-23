@@ -67,6 +67,7 @@ struct LintCommandConfig {
     post_command: Option<Vec<String>>,
     #[serde(rename = "if")]
     condition: Option<String>,
+    environment: Option<String>,
 }
 
 fn load_config() -> Result<RepoConfig, ConfigError> {
@@ -334,7 +335,7 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                 }
 
                 let (staged_worktree, _worktree_guard) = create_staged_worktree(&git_repo_path)?;
-                let execution_location = staged_worktree.path();
+                let sandbox_location = staged_worktree.path();
                 let mut results = IndexMap::new();
                 let mut failed = false;
 
@@ -354,6 +355,19 @@ pub fn run_preflight() -> Result<(), RepoFuncError> {
                             args: vec!["preflight_commands.*.command".to_string()],
                         });
                     }
+
+                    let execution_location = match &command.environment {
+                        None => sandbox_location,
+                        Some(str) => match str.as_str() {
+                            "sandbox" => sandbox_location,
+                            "standard" => git_repo_path.as_path(),
+                            _ => {
+                                return Err(RepoFuncError::Custom {
+                                    information: format!("Invalid environment: {}", str),
+                                });
+                            }
+                        },
+                    };
 
                     let out = execute_command_from_vec(&command.command, execution_location);
 
