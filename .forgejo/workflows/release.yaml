@@ -78,6 +78,18 @@ jobs:
           release-notes: ${{ steps.changelog.outputs.notes }}
           prerelease: ${{ steps.metadata.outputs.prerelease }}
           skip-assets: true
+      
+      - name: Create Codeberg release
+        uses: actions/forgejo-release@v2
+        with:
+          direction: upload
+          url: https://codeberg.org
+          repo: jonahmakowski/cli-tool
+          token: ${{ secrets.CODEBERG_TOKEN }}
+          tag: ${{ steps.metadata.outputs.tag }}
+          release-notes: ${{ steps.changelog.outputs.notes }}
+          prerelease: ${{ steps.metadata.outputs.prerelease }}
+          skip-assets: true
 
       - name: Install Github CLI
         run: |
